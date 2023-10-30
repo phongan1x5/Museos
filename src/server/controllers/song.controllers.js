@@ -1,5 +1,4 @@
-import Song from "../mongodb/models/song";
-import User from "../mongodb/models/user";
+import Song from "../mongodb/models/song.js";
 
 const createSong = async (req, res) => {};
 const updateSong = async (req, res) => {};
