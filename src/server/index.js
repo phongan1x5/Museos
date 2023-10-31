@@ -3,6 +3,7 @@ import * as dotenv from "dotenv";
 import cors from "cors";
 
 import connectDB from "./mongodb/connect.js";
+import trendRouter from "./routes/trend.routes.js";
 import userRouter from "./routes/user.routes.js";
 import songRouter from "./routes/song.routes.js";
 
@@ -16,6 +17,7 @@ app.get("/", (req, res) => {
     res.send({ message: "Hello, World!" });
 });
 
+app.use("/api/v1/trend", trendRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/songs", songRouter);
 
