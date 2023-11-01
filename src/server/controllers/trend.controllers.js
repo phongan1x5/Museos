@@ -1,11 +1,33 @@
 import Trend from "../mongodb/models/trend.js";
+import User from "../mongodb/models/user.js";
+
+const updateTrend = async (req, res, next) => {
+    const currMonth = new Date().getMonth() + 1;
+    const { month } = await Trend.findOne({});
+    if (currMonth === month) next();
+
+    const users = await User.find({}, "allSongs");
+    const artists = [];
+    const songs = [];
+
+    users.forEach((user) => {
+        artists.push({ artist: user._id, listenCnt: 0 });
+        user.allSongs.forEach((song) => {
+            songs.push({ song, listenCnt: 0 });
+        });
+    });
+
+    await Trend.deleteOne({});
+    await Trend.create({ month, artists, songs });
+    next();
+};
 
 const getAllTrends = async (req, res) => {
-    try {
-        let { limit } = req.query;
-        limit = parseInt(limit, 10);
-        if (Number.isNaN(limit)) limit = 10;
+    let { limit } = req.query;
+    limit = parseInt(limit, 10);
+    if (Number.isNaN(limit)) limit = false;
 
+    try {
         const { month, artists, songs } = await Trend.findOne({}).populate([
             { path: "artists.artist" },
             { path: "songs.song" },
@@ -16,28 +38,37 @@ const getAllTrends = async (req, res) => {
                 return a.artist.userName < b.artist.userName ? -1 : 1;
             return b.listenCnt - a.listenCnt;
         });
+
         songs.sort((a, b) => {
             if (a.listenCnt === b.listenCnt)
                 return a.song.songName < b.song.songName ? -1 : 1;
             return b.listenCnt - a.listenCnt;
         });
 
-        res.status(200).json({
+        const response = {
             month,
-            artists: artists.slice(0, limit),
-            songs: songs.slice(0, limit),
-        });
+            artists: artists.slice(0, limit || artists.length),
+            songs: songs.slice(0, limit || songs.length),
+        };
+
+        res.header("artist-total-count", response.artists.length);
+        res.header("song-total-count", response.songs.length);
+        res.header("Access-Control-Expose-Headers", [
+            "artist-total-count",
+            "song-total-count",
+        ]);
+        res.status(200).json(response);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
 const getTrendArtists = async (req, res) => {
-    try {
-        let { limit } = req.query;
-        limit = parseInt(limit, 10);
-        if (Number.isNaN(limit)) limit = 10;
+    let { limit } = req.query;
+    limit = parseInt(limit, 10);
+    if (Number.isNaN(limit)) limit = false;
 
+    try {
         const { month, artists } = await Trend.findOne(
             {},
             "month artists"
@@ -49,21 +80,25 @@ const getTrendArtists = async (req, res) => {
             return b.listenCnt - a.listenCnt;
         });
 
-        res.status(200).json({
+        const response = {
             month,
-            artists: artists.slice(0, limit),
-        });
+            artists: artists.slice(0, limit || artists.length),
+        };
+
+        res.header("artist-total-count", response.artists.length);
+        res.header("Access-Control-Expose-Headers", "artist-total-count");
+        res.status(200).json(response);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
 const getTrendSongs = async (req, res) => {
-    try {
-        let { limit } = req.query;
-        limit = parseInt(limit, 10);
-        if (Number.isNaN(limit)) limit = 10;
+    let { limit } = req.query;
+    limit = parseInt(limit, 10);
+    if (Number.isNaN(limit)) limit = false;
 
+    try {
         const { month, songs } = await Trend.findOne(
             {},
             "month songs"
@@ -75,13 +110,17 @@ const getTrendSongs = async (req, res) => {
             return b.listenCnt - a.listenCnt;
         });
 
-        res.status(200).json({
+        const response = {
             month,
-            songs: songs.slice(0, limit),
-        });
+            songs: songs.slice(0, limit || songs.length),
+        };
+
+        res.header("song-total-count", response.songs.length);
+        res.header("Access-Control-Expose-Headers", "song-total-count");
+        res.status(200).json(response);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-export { getAllTrends, getTrendArtists, getTrendSongs };
+export { updateTrend, getAllTrends, getTrendArtists, getTrendSongs };

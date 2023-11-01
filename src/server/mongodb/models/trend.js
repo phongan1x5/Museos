@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const artSchema = new mongoose.Schema({
+const trendArtistSchema = new mongoose.Schema({
     artist: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
@@ -12,7 +12,7 @@ const artSchema = new mongoose.Schema({
     },
 });
 
-const sonSchema = new mongoose.Schema({
+const trendSongSchema = new mongoose.Schema({
     song: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Song",
@@ -26,8 +26,8 @@ const sonSchema = new mongoose.Schema({
 
 const trendSchema = new mongoose.Schema({
     month: { type: Number, required: true },
-    artists: [{ type: artSchema }],
-    songs: [{ type: sonSchema }],
+    artists: [{ type: trendArtistSchema }],
+    songs: [{ type: trendSongSchema }],
 });
 
 const trendModel = mongoose.model("Trend", trendSchema);

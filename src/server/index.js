@@ -23,7 +23,7 @@ app.use("/api/v1/songs", songRouter);
 
 const startServer = async () => {
     try {
-        connectDB(process.env.MONGODB_URL);
+        connectDB(`${process.env.MONGODB_URL}`);
         app.listen(3000, () =>
             console.log("Server started on port http://localhost:3000")
         );
