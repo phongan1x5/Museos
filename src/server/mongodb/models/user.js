@@ -1,16 +1,31 @@
 import mongoose from "mongoose";
 
 const UserSchema = new mongoose.Schema(
-    {
-        userEmail: { type: String, required: true },
-        userPassword: { type: String, required: true },
-        userName: { type: String, required: true },
-        userDOB: { type: Date, required: true },
-        balance: { type: Number, required: true, default: 0 },
-        followerCnt: { type: Number, required: true, default: 0 },
-        allSongs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Song" }],
-    },
-    { timestamps: true }
+  {
+    email: { type: String, required: true },
+    password: { type: String, required: true },
+    name: { type: String, required: true },
+    DOB: { type: Date, required: true },
+    avatarPath: { type: String, required: true },
+    balance: { type: Number, required: true, default: 0 },
+    followerCnt: { type: Number, required: true, default: 0 },
+    uploadedSongs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Song" }],
+    postedComments: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Comment",
+        default: [],
+      },
+    ],
+    playlists: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Playlist",
+        default: [],
+      },
+    ],
+  },
+  { timestamps: true }
 );
 
 const userModel = mongoose.model("User", UserSchema);
