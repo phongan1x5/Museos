@@ -1,10 +1,11 @@
 import mongoose from "mongoose";
+import User from "./user.js";
 
 const BanSchema = new mongoose.Schema(
-  {
-    users: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-  },
-  { timestamps: true }
+    {
+        users: [{ type: User.schema, default: [] }],
+    },
+    { timestamps: true }
 );
 
 const banModel = mongoose.model("Ban", BanSchema);
