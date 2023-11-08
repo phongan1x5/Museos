@@ -23,11 +23,11 @@ const updateTrend = async (req, res, next) => {
 };
 
 const getAllTrends = async (req, res) => {
-    let { limit } = req.query;
-    limit = parseInt(limit, 10);
-    if (Number.isNaN(limit)) limit = false;
-
     try {
+        let { limit } = req.query;
+        limit = parseInt(limit, 10);
+        if (Number.isNaN(limit)) limit = false;
+
         const { month, artists, songs } = await Trend.findOne({}).populate([
             { path: "artists.artist" },
             { path: "songs.song" },
@@ -64,11 +64,11 @@ const getAllTrends = async (req, res) => {
 };
 
 const getTrendArtists = async (req, res) => {
-    let { limit } = req.query;
-    limit = parseInt(limit, 10);
-    if (Number.isNaN(limit)) limit = false;
-
     try {
+        let { limit } = req.query;
+        limit = parseInt(limit, 10);
+        if (Number.isNaN(limit)) limit = false;
+
         const { month, artists } = await Trend.findOne(
             {},
             "month artists"
@@ -94,11 +94,11 @@ const getTrendArtists = async (req, res) => {
 };
 
 const getTrendSongs = async (req, res) => {
-    let { limit } = req.query;
-    limit = parseInt(limit, 10);
-    if (Number.isNaN(limit)) limit = false;
-
     try {
+        let { limit } = req.query;
+        limit = parseInt(limit, 10);
+        if (Number.isNaN(limit)) limit = false;
+
         const { month, songs } = await Trend.findOne(
             {},
             "month songs"

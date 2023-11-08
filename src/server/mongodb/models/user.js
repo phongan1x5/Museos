@@ -6,7 +6,7 @@ const UserSchema = new mongoose.Schema(
         password: { type: String, required: true },
         name: { type: String, required: true },
         DOB: { type: Date, required: true },
-        avatarPath: { type: String, required: true },
+        avatarPath: { type: String, required: true, default: " " },
         balance: { type: Number, required: true, default: 0 },
         followerCnt: { type: Number, required: true, default: 0 },
         uploadedSongs: [

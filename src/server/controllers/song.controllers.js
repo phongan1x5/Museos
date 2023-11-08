@@ -13,7 +13,7 @@ const createSong = async (req, res) => {
         const fileUpLink = await getSignedURL(`${newSong._id}_file`);
         const coverUpLink = await getSignedURL(`${newSong._id}_cover`);
 
-        Song.findByIdAndUpdate(newSong._id, {
+        await Song.findByIdAndUpdate(newSong._id, {
             lyricsPath: `${baseDownURL}/${newSong._id}_lyrics.txt`,
             fileLink: `${baseDownURL}/${newSong._id}_file.mp3`,
             coverPath: `${baseDownURL}/${newSong._id}_cover.png`,

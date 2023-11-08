@@ -4,7 +4,7 @@ const PlaylistSchema = new mongoose.Schema(
     {
         title: { type: String, required: true },
         creator: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-        coverPath: { type: String, required: true },
+        coverPath: { type: String, required: true, default: " " },
         isBanned: { type: Boolean, required: true, default: false },
         songs: [
             { type: mongoose.Schema.Types.ObjectId, ref: "Song", default: [] },
@@ -18,6 +18,6 @@ const PlaylistSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-const playlistModel = mongoose.model("Song", PlaylistSchema);
+const playlistModel = mongoose.model("Playlist", PlaylistSchema);
 
 export default playlistModel;

@@ -3,13 +3,12 @@ import User from "../mongodb/models/user.js";
 import Ban from "../mongodb/models/ban.js";
 
 const createUser = async (req, res) => {
-    const { email, rawPassword, name, DOB } = req.body;
-
     try {
+        const { email, rawPassword, name, DOB } = req.body;
         const password = bcrypt.hashSync(rawPassword, 10, null);
+
         const checkUserExist = await User.findOne({ email });
         const checkBanExist = await Ban.findOne({ "users.email": email });
-
         if (checkUserExist || checkBanExist) throw new Error("Invalid email!");
 
         const newUser = await User.create({
@@ -26,13 +25,10 @@ const createUser = async (req, res) => {
 };
 
 const loginUser = async (req, res) => {
-    const { email, password } = req.body;
     try {
+        const { email, password } = req.body;
         User.findOne({ email }).then((user) => {
             if (user) {
-                if (Ban.findOne({ "users.email": user.email }))
-                    return res.status(403).json({ message: "Forbidden user!" });
-
                 const compPasswordRes = bcrypt.compareSync(
                     password,
                     user.password
@@ -47,24 +43,24 @@ const loginUser = async (req, res) => {
 };
 
 const getAllUsers = async (req, res) => {
-    const { nameLike = "", sorts, orders, limit } = req.query;
-    const query = {};
-    if (nameLike) query.name = { $regex: nameLike, $options: "i" };
-
-    let sortAttrs = ["name"];
-    if (sorts) sortAttrs = sorts.split("@");
-    let sortOrds = "1";
-    if (orders) sortOrds = orders;
-    while (sortOrds.length < sortAttrs.length) sortOrds += "1";
-
-    const sortq = {};
-    for (let i = 0; i < sortAttrs.length; i += 1)
-        sortq[sortAttrs[i]] = !parseInt(sortOrds[i], 10) ? -1 : 1;
-
-    let qlimit = parseInt(limit, 10);
-    if (Number.isNaN(qlimit)) qlimit = false;
-
     try {
+        const { nameLike = "", sorts, orders, limit } = req.query;
+        const query = {};
+        if (nameLike) query.name = { $regex: nameLike, $options: "i" };
+
+        let sortAttrs = ["name"];
+        if (sorts) sortAttrs = sorts.split("@");
+        let sortOrds = "1";
+        if (orders) sortOrds = orders;
+        while (sortOrds.length < sortAttrs.length) sortOrds += "1";
+
+        const sortq = {};
+        for (let i = 0; i < sortAttrs.length; i += 1)
+            sortq[sortAttrs[i]] = !parseInt(sortOrds[i], 10) ? -1 : 1;
+
+        let qlimit = parseInt(limit, 10);
+        if (Number.isNaN(qlimit)) qlimit = false;
+
         const users = await User.find(query).sort(sortq).limit(qlimit);
         res.header("user-total-count", users.length);
         res.header("Access-Control-Expose-Headers", "user-total-count");
