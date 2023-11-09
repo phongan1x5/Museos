@@ -1,24 +1,37 @@
-import * as dotenv from "dotenv";
 import Song from "../mongodb/models/song.js";
+import User from "../mongodb/models/user.js";
+import Playlist from "../mongodb/models/playlist.js";
 import Trend from "../mongodb/models/trend.js";
-import getSignedURL from "../utils/aws.util.js";
-
-dotenv.config();
-const baseDownURL = `https://${process.env.BUCKET}.s3.${process.env.REGION}.amazonaws.com`;
+import { baseDownURL, getSignedURL } from "../utils/aws.util.js";
 
 const createSong = async (req, res) => {
     try {
         const { title, artist, length } = req.body;
-        const newSong = await Song.create({ title, artist, length });
+        let newSong = await Song.create({ title, artist, length });
         const lyricsUpLink = await getSignedURL(`${newSong._id}_lyrics`);
         const fileUpLink = await getSignedURL(`${newSong._id}_file`);
         const coverUpLink = await getSignedURL(`${newSong._id}_cover`);
 
-        await Song.findByIdAndUpdate(newSong._id, {
-            lyricsPath: `${baseDownURL}/${newSong._id}_lyrics.txt`,
-            fileLink: `${baseDownURL}/${newSong._id}_file.mp3`,
-            coverPath: `${baseDownURL}/${newSong._id}_cover.png`,
+        newSong = await Song.findByIdAndUpdate(
+            newSong._id,
+            {
+                lyricsPath: `${baseDownURL}/${newSong._id}_lyrics.txt`,
+                fileLink: `${baseDownURL}/${newSong._id}_file.mp3`,
+                coverPath: `${baseDownURL}/${newSong._id}_cover.png`,
+            },
+            { new: true }
+        );
+
+        await User.findByIdAndUpdate(artist, {
+            $push: { uploadedSongs: newSong._id },
         });
+
+        await Trend.updateOne(
+            {},
+            {
+                $push: { songs: { song: newSong._id, listenCnt: 0 } },
+            }
+        );
 
         res.status(200).json({
             newSong,
@@ -59,10 +72,54 @@ const listenSong = async (req, res) => {
             },
         ]);
 
-        res.status(200).json({ updatedSong });
+        res.status(200).json(updatedSong);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-export { createSong, updateSong, listenSong };
+const likeSong = async (req, res) => {
+    try {
+        const { user, song } = req.query;
+        if (!user || !song) throw Error("Invalid user or song!");
+
+        await Song.findByIdAndUpdate(song, { $inc: { heartCnt: 1 } });
+
+        const updatedPlaylist = await Playlist.findOneAndUpdate(
+            {
+                title: "Liked Songs",
+                creator: user,
+            },
+            { $push: { songs: song } },
+            { new: true }
+        );
+
+        res.status(200).json(updatedPlaylist);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const unlikeSong = async (req, res) => {
+    try {
+        const { user, song } = req.query;
+        if (!user || !song) throw Error("Invalid user or song!");
+
+        await Song.findByIdAndUpdate(song, { $inc: { heartCnt: -1 } });
+
+        const updatedPlaylist = await Playlist.findOneAndUpdate(
+            {
+                title: "Liked Songs",
+                creator: user,
+            },
+            { $pull: { songs: song } },
+            { new: true }
+        );
+
+        res.status(200).json(updatedPlaylist);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+export { createSong, updateSong, listenSong, likeSong, unlikeSong };

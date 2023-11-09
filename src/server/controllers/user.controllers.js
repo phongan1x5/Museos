@@ -1,6 +1,8 @@
 import bcrypt from "bcrypt";
 import User from "../mongodb/models/user.js";
+import Playlist from "../mongodb/models/playlist.js";
 import Ban from "../mongodb/models/ban.js";
+import { baseDownURL, getSignedURL } from "../utils/aws.util.js";
 
 const createUser = async (req, res) => {
     try {
@@ -11,12 +13,25 @@ const createUser = async (req, res) => {
         const checkBanExist = await Ban.findOne({ "users.email": email });
         if (checkUserExist || checkBanExist) throw new Error("Invalid email!");
 
-        const newUser = await User.create({
+        let newUser = await User.create({
             email,
             password,
             name,
             DOB,
         });
+
+        const likedSongs = await Playlist.create({
+            title: "Liked Songs",
+            creator: newUser._id,
+        });
+
+        newUser = await User.findByIdAndUpdate(
+            newUser._id,
+            {
+                $push: { playlists: likedSongs._id },
+            },
+            { new: true }
+        );
 
         res.status(200).json(newUser);
     } catch (error) {
@@ -99,6 +114,34 @@ const getUserById = async (req, res) => {
     }
 };
 
-const updateUser = async (req, res) => {};
+const updateUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { email = "", name = "", DOB = "", newAvatar = "" } = req.body;
+
+        const updates = {};
+        if (email) updates.email = email;
+        if (name) updates.name = name;
+        if (DOB) updates.DOB = DOB;
+
+        let avatarUpLink = "";
+        if (newAvatar) {
+            updates.avatarPath = `${baseDownURL}/${id}_avatar.png`;
+            avatarUpLink = await getSignedURL(`${id}_avatar`);
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(id, updates, {
+            new: true,
+        });
+
+        const response = newAvatar
+            ? { updatedUser, avatarUpLink }
+            : updatedUser;
+
+        res.status(200).json(response);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
 
 export { createUser, loginUser, getAllUsers, getUserById, updateUser };

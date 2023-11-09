@@ -11,6 +11,7 @@ aws.config.update({
 });
 
 const Bucket = process.env.BUCKET;
+const baseDownURL = `https://${process.env.BUCKET}.s3.${process.env.REGION}.amazonaws.com`;
 
 const getSignedURL = async (fileID, expireMins) => {
     const aws3 = new aws.S3();
@@ -19,4 +20,4 @@ const getSignedURL = async (fileID, expireMins) => {
     return aws3.getSignedUrl("putObject", { Bucket, Key, Expires });
 };
 
-export default getSignedURL;
+export { baseDownURL, getSignedURL };

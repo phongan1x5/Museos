@@ -25,6 +25,7 @@ const updateTrend = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
+    return null;
 };
 
 const getAllTrends = async (req, res) => {

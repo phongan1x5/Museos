@@ -13,7 +13,12 @@ const SongSchema = new mongoose.Schema(
         lyricsPath: { type: String, required: true, default: " " },
         listenCnt: { type: Number, required: true, default: 0 },
         heartCnt: { type: Number, required: true, default: 0 },
-        coverPath: { type: String, required: true, default: " " },
+        coverPath: {
+            type: String,
+            required: true,
+            default:
+                "https://museos-seslay.s3.ap-southeast-1.amazonaws.com/default_songCover.png",
+        },
         filePath: { type: String, required: true, default: " " },
         isBanned: { type: Boolean, required: true, default: false },
         commentSect: [
