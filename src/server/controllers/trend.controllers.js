@@ -2,24 +2,29 @@ import Trend from "../mongodb/models/trend.js";
 import User from "../mongodb/models/user.js";
 
 const updateTrend = async (req, res, next) => {
-    const currMonth = new Date().getMonth() + 1;
-    const { month } = await Trend.findOne({});
-    if (currMonth === month) next();
+    try {
+        const currMonth = new Date().getMonth() + 1;
+        const { month } = await Trend.findOne({});
+        if (currMonth === month) return next();
 
-    const users = await User.find({}, "allSongs");
-    const artists = [];
-    const songs = [];
+        console.log(currMonth, " ", month, " ", currMonth === month);
+        const users = await User.find({}, "uploadedSongs");
+        const artists = [];
+        const songs = [];
 
-    users.forEach((user) => {
-        artists.push({ artist: user._id, listenCnt: 0 });
-        user.allSongs.forEach((song) => {
-            songs.push({ song, listenCnt: 0 });
+        users.forEach((user) => {
+            artists.push({ artist: user._id, listenCnt: 0 });
+            user.uploadedSongs.forEach((song) => {
+                songs.push({ song, listenCnt: 0 });
+            });
         });
-    });
 
-    await Trend.deleteOne({});
-    await Trend.create({ month, artists, songs });
-    next();
+        await Trend.deleteOne({});
+        await Trend.create({ month: currMonth, artists, songs });
+        next();
+    } catch (error) {
+        next(error);
+    }
 };
 
 const getAllTrends = async (req, res) => {

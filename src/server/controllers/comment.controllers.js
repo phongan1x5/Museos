@@ -9,20 +9,18 @@ const createComment = async (req, res) => {
 
     try {
         const { user, song, content } = req.body;
-        const newComment = await Comment.create(
-            { user, song, content },
-            { session }
-        );
+        const newComment = await Comment.create([{ user, song, content }], {
+            session,
+        });
 
         const updatedUser = await User.findByIdAndUpdate(
             user,
-            { $push: { postedComments: newComment._id } },
+            { $push: { postedComments: newComment[0]._id } },
             { session, new: true }
         );
-
         const updatedSong = await Song.findByIdAndUpdate(
             song,
-            { $push: { commentSect: newComment._id } },
+            { $push: { commentSect: newComment[0]._id } },
             { session, new: true }
         );
 
