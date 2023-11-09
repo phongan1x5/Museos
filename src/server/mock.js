@@ -9,6 +9,9 @@ import { getAudioDurationInSeconds } from "get-audio-duration";
 import connectDB from "./mongodb/connect.js";
 import User from "./mongodb/models/user.js";
 import Song from "./mongodb/models/song.js";
+import Trend from "./mongodb/models/trend.js";
+import { updateTrend } from "./controllers/trend.controllers.js";
+import { createComment } from "./controllers/comment.controllers.js";
 
 dotenv.config();
 
@@ -151,10 +154,62 @@ const addSong = async () => {
   });
 };
 
+const listenToSong = async () => {
+  Song.find({}, "_id artist").then(async (songList) => {
+    const randomSong = songList[Math.floor(Math.random() * songList.length)];
+    const songFilter = { _id: randomSong._id };
+    const songUpdate = { $inc: { listenCnt: 1 } };
+    await Song.updateOne(songFilter, songUpdate);
+
+    await Trend.updateOne(
+      { "artists.artist": randomSong.artist },
+      { $inc: { "artists.$.listenCnt": 1 } }
+    );
+    await Trend.updateOne(
+      { "songs.song": randomSong._id },
+      { $inc: { "songs.$.listenCnt": 1 } }
+    );
+    console.log("Listen to song: ", randomSong._id);
+    console.log("Listen to artist: ", randomSong.artist);
+  });
+};
+
+const randomCmt = [
+  "I love this song <3",
+  "I don't like it",
+  "OMG this song is rockkkk",
+  "Who is the artist",
+  "LOLLLLLLLL",
+];
+
+const commentSong = async () => {
+  Song.find({}, "_id").then(async (songList) => {
+    const randomSong = songList[Math.floor(Math.random() * songList.length)];
+    User.find({}, "_id").then(async (userList) => {
+      const randomUser = userList[Math.floor(Math.random() * userList.length)];
+      const randomComment =
+        randomCmt[Math.floor(Math.random() * randomCmt.length)];
+      const req = {
+        body: {
+          user: randomUser._id,
+          song: randomSong._id,
+          content: String(randomComment),
+        },
+      };
+      await createComment(req);
+    });
+  });
+};
+
 const startServer = async () => {
   try {
     connectDB(`${process.env.MONGODB_URL}`);
-    addSong();
+    // addUser();
+    //addSong();
+    // Trend.create({ month: 10 });
+    // updateTrend();
+    // for (let i = 0; i <= 15; i += 1) listenToSong();
+    for (let i = 0; i <= 1; i += 1) commentSong();
   } catch (error) {
     console.log(error);
   }
