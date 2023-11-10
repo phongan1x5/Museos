@@ -12,8 +12,6 @@ const PlaylistSchema = new mongoose.Schema(
         allowedUsers: [
             { type: mongoose.Schema.Types.ObjectId, ref: "User", default: [] },
         ],
-        // listenCnt: { type: Number, required: true, default: 0 },
-        // heartCnt: { type: Number, required: true, default: 0 },
     },
     { timestamps: true }
 );

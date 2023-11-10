@@ -32,11 +32,14 @@ const SongSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-SongSchema.pre(["findOneAndDelete"], async (next) => {
+SongSchema.pre("findOneAndDelete", async (next) => {
     try {
-        if (this.isBanned) {
-            console.log("hello");
-        } else
+        if (this.isBanned)
+            await Ban.updateOne(
+                { "users._id": this.artist },
+                { $pull: { "users.$.uploadedSongs": this._id } }
+            );
+        else
             await User.findByIdAndUpdate(this.artist, {
                 $pull: { uploadedSongs: this._id },
             });

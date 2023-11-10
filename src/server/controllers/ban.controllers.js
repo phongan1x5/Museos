@@ -4,6 +4,18 @@ import Song from "../mongodb/models/song.js";
 import Comment from "../mongodb/models/comment.js";
 import Playlist from "../mongodb/models/playlist.js";
 
+const updateBan = async (req, res, next) => {
+    try {
+        const ban = await Ban.findOne({});
+        if (ban) return next();
+        await Ban.create({});
+        next();
+    } catch (error) {
+        next(error);
+    }
+    return null;
+};
+
 const banUser = async (req, res) => {
     try {
         const { id } = req.params;
@@ -49,4 +61,19 @@ const removeSong = async (req, res) => {
     }
 };
 
-export { banUser, removeSong };
+const removeComment = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const comment = await Comment.findById(id);
+        if (!comment) throw new Error("Invalid comment!");
+
+        await Comment.findByIdAndDelete(comment._id);
+        res.status(200).json({
+            message: "Comment successfully removed!",
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+export { updateBan, banUser, removeSong, removeComment };

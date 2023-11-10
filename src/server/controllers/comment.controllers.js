@@ -28,11 +28,11 @@ const createComment = async (req, res) => {
             throw new Error("Invalid user or song!");
 
         await session.commitTransaction();
-        session.endSession();
+        await session.endSession();
         res.status(200).json(newComment);
     } catch (error) {
         await session.abortTransaction();
-        session.endSession();
+        await session.endSession();
         res.status(500).json({ message: error.message });
     }
 };

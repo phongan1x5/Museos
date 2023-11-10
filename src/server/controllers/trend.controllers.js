@@ -7,7 +7,6 @@ const updateTrend = async (req, res, next) => {
         const { month } = await Trend.findOne({});
         if (currMonth === month) return next();
 
-        console.log(currMonth, " ", month, " ", currMonth === month);
         const users = await User.find({}, "uploadedSongs");
         const artists = [];
         const songs = [];
