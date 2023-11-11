@@ -5,44 +5,57 @@ import User from "./user.js";
 // a dependency cycle
 
 const CommentSchema = new mongoose.Schema(
-    {
-        user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-        song: { type: mongoose.Schema.Types.ObjectId, ref: "Song" },
-        content: { type: String, required: true },
-        isBanned: { type: Boolean, required: true, default: false },
-    },
-    { timestamps: true }
+  {
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    song: { type: mongoose.Schema.Types.ObjectId, ref: "Song" },
+    content: { type: String, required: true },
+    isBanned: { type: Boolean, required: true, default: false },
+  },
+  { timestamps: true }
 );
 
-CommentSchema.pre("findOneAndDelete", async (next) => {
-    try {
-        if (this.isBanned)
-            await Ban.updateOne(
-                { "users._id": this.user },
-                { $pull: { "users.$.postedComments": this._id } }
-            );
-        else
-            await User.findByIdAndUpdate(this.user, {
-                $pull: { postedComments: this._id },
-            });
+const removeRefComment = async (cmt) => {
+  console.log("Removing ref for: ", cmt);
+  if (cmt.isBanned)
+    await Ban.updateOne(
+      { "users._id": cmt.user },
+      { $pull: { "users.$.postedComments": cmt._id } }
+    );
+  else
+    await User.findByIdAndUpdate(cmt.user, {
+      $pull: { postedComments: cmt._id },
+    });
 
-        await mongoose.model("Song").findByIdAndUpdate(this.song, {
-            $pull: { commentSect: this._id },
-        });
-        next();
-    } catch (error) {
-        next(error);
-    }
+  await mongoose.model("Song").findByIdAndUpdate(cmt.song, {
+    $pull: { commentSect: cmt._id },
+  });
+};
+
+CommentSchema.pre("findOneAndDelete", async function removeRefs(next) {
+  try {
+    console.log("In the pre section of findOneAndDelete Comment");
+    const cmtID = this.getFilter();
+    const cmt = await this.model.findOne({ _id: cmtID });
+    console.log(cmt);
+    await removeRefComment(cmt);
+    next();
+  } catch (error) {
+    next(error);
+  }
 });
 
-CommentSchema.pre("deleteMany", async (next) => {
-    try {
-        console.log(this);
-        console.log(this._conditions);
-        next();
-    } catch (error) {
-        next(error);
-    }
+CommentSchema.pre("deleteMany", async function removeRefs(next) {
+  try {
+    const filter = this.getFilter();
+    const comments = await this.model.find(filter);
+    console.log(filter);
+    console.log(comments);
+    comments.forEach((cmt) => removeRefComment(cmt));
+
+    next();
+  } catch (error) {
+    next(error);
+  }
 });
 
 const commentModel = mongoose.model("Comment", CommentSchema);
