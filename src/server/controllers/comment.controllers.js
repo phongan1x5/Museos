@@ -52,4 +52,19 @@ const updateComment = async (req, res) => {
     }
 };
 
-export { createComment, updateComment };
+const removeComment = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const comment = await Comment.findById(id);
+        if (!comment) throw new Error("Invalid comment!");
+
+        await Comment.findByIdAndDelete(comment._id);
+        res.status(200).json({
+            message: "Comment successfully removed!",
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+export { createComment, updateComment, removeComment };

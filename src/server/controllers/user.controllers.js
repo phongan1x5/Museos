@@ -2,7 +2,8 @@ import bcrypt from "bcrypt";
 import User from "../mongodb/models/user.js";
 import Playlist from "../mongodb/models/playlist.js";
 import Ban from "../mongodb/models/ban.js";
-import { baseDownURL, getSignedURL } from "../utils/aws.util.js";
+import { baseDownURL, getSignedURL } from "../utils/aws.utils.js";
+import { makeSortQuery } from "../utils/misc.utils.js";
 
 const createUser = async (req, res) => {
     try {
@@ -63,15 +64,10 @@ const getAllUsers = async (req, res) => {
         const query = {};
         if (nameLike) query.name = { $regex: nameLike, $options: "i" };
 
-        let sortAttrs = ["name"];
-        if (sorts) sortAttrs = sorts.split("@");
-        let sortOrds = "1";
-        if (orders) sortOrds = orders;
-        while (sortOrds.length < sortAttrs.length) sortOrds += "1";
-
-        const sortq = {};
-        for (let i = 0; i < sortAttrs.length; i += 1)
-            sortq[sortAttrs[i]] = !parseInt(sortOrds[i], 10) ? -1 : 1;
+        const sortq = makeSortQuery(
+            { sorts, defAttr: "name" },
+            { orders, defOrd: "1" }
+        );
 
         let qlimit = parseInt(limit, 10);
         if (Number.isNaN(qlimit)) qlimit = false;
@@ -89,12 +85,9 @@ const getUserById = async (req, res) => {
     try {
         const { id } = req.params;
         const user = await User.findById(id).populate([
-            {
-                path: "uploadedSongs",
-            },
-            {
-                path: "playlists",
-            },
+            { path: "uploadedSongs" },
+            { path: "postedComments" },
+            { path: "playlists" },
         ]);
 
         if (!user) throw new Error("Invalid user!");

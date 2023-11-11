@@ -2,7 +2,8 @@ import Song from "../mongodb/models/song.js";
 import User from "../mongodb/models/user.js";
 import Playlist from "../mongodb/models/playlist.js";
 import Trend from "../mongodb/models/trend.js";
-import { baseDownURL, getSignedURL } from "../utils/aws.util.js";
+import { baseDownURL, getSignedURL } from "../utils/aws.utils.js";
+import { makeSortQuery } from "../utils/misc.utils.js";
 
 const createSong = async (req, res) => {
     try {
@@ -52,6 +53,71 @@ const createSong = async (req, res) => {
     }
 };
 
+const getAllSongs = async (req, res) => {
+    try {
+        const {
+            titleLike = "",
+            artistLike = "",
+            length = "",
+            sorts,
+            orders,
+            limit,
+        } = req.query;
+
+        const query = { isBanned: false };
+        if (titleLike) query.title = { $regex: titleLike, $options: "i" };
+        if (length) {
+            const [sign, value] = length.split("@");
+            console.log(length, value);
+            const filter = {};
+            filter[`$${sign}`] = value;
+            query.length = filter;
+        }
+
+        const sortq = makeSortQuery(
+            { sorts, defAttr: "title" },
+            { orders, defOrd: "1" }
+        );
+
+        let qlimit = parseInt(limit, 10);
+        if (Number.isNaN(qlimit)) qlimit = false;
+
+        let songs = await Song.find(query)
+            .populate({
+                path: "artist",
+                match: { name: { $regex: artistLike, $options: "i" } },
+            })
+            .sort(sortq)
+            .limit(qlimit);
+
+        songs = songs.filter((song) => song.artist);
+
+        res.header("song-total-count", songs.length);
+        res.header("Access-Control-Expose-Headers", "song-total-count");
+        res.status(200).json(songs);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const getSongById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const song = await Song.findById(id).populate([
+            { path: "artist" },
+            { path: "commentSect" },
+        ]);
+
+        if (!song) throw new Error("Invalid song!");
+
+        res.header("comment-total-count", song.commentSect.length);
+        res.header("Access-Control-Expose-Headers", "comment-total-count");
+        res.status(200).json(song);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 const updateSong = async (req, res) => {
     try {
         const { id } = req.params;
@@ -82,6 +148,21 @@ const updateSong = async (req, res) => {
         if (newCover) response.coverUpLink = coverUpLink;
 
         res.status(200).json(response);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const removeSong = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const song = await Song.findById(id);
+        if (!song) throw new Error("Invalid song!");
+
+        await Song.findByIdAndDelete(song._id);
+        res.status(200).json({
+            message: `${song.title} successfully removed!`,
+        });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -163,4 +244,13 @@ const unlikeSong = async (req, res) => {
     }
 };
 
-export { createSong, updateSong, listenSong, likeSong, unlikeSong };
+export {
+    createSong,
+    getAllSongs,
+    getSongById,
+    updateSong,
+    removeSong,
+    listenSong,
+    likeSong,
+    unlikeSong,
+};
