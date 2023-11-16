@@ -12,7 +12,7 @@ const createSong = async (req, res) => {
 
         const fileUpLink = await getSignedURL(`${newSong._id}_file`);
         const linkUpdates = {
-            fileLink: `${baseDownURL}/${newSong._id}_file.mp3`,
+            filePath: `${baseDownURL}/${newSong._id}_file.mp3`,
         };
 
         let lyricsUpLink = "";
