@@ -126,7 +126,7 @@ body{
 .login-section .user-input,.password-input{
     border-radius: 25px;
     background: rgba(217, 217, 217, 0.20);
-    width: 40rem;
+    width: 40vw;
     height: 80px;
     border: none;
     font-family: 'iCiel Grandma';
