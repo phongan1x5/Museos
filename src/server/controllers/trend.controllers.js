@@ -2,32 +2,37 @@ import Trend from "../mongodb/models/trend.js";
 import User from "../mongodb/models/user.js";
 
 const updateTrend = async (req, res, next) => {
-    const currMonth = new Date().getMonth() + 1;
-    const { month } = await Trend.findOne({});
-    if (currMonth === month) next();
+    try {
+        const currMonth = new Date().getMonth() + 1;
+        const { month } = await Trend.findOne({});
+        if (currMonth === month) return next();
 
-    const users = await User.find({}, "allSongs");
-    const artists = [];
-    const songs = [];
+        const users = await User.find({}, "uploadedSongs");
+        const artists = [];
+        const songs = [];
 
-    users.forEach((user) => {
-        artists.push({ artist: user._id, listenCnt: 0 });
-        user.allSongs.forEach((song) => {
-            songs.push({ song, listenCnt: 0 });
+        users.forEach((user) => {
+            artists.push({ artist: user._id, listenCnt: 0 });
+            user.uploadedSongs.forEach((song) => {
+                songs.push({ song, listenCnt: 0 });
+            });
         });
-    });
 
-    await Trend.deleteOne({});
-    await Trend.create({ month, artists, songs });
-    next();
+        await Trend.deleteOne({});
+        await Trend.create({ month: currMonth, artists, songs });
+        next();
+    } catch (error) {
+        next(error);
+    }
+    return null;
 };
 
 const getAllTrends = async (req, res) => {
-    let { limit } = req.query;
-    limit = parseInt(limit, 10);
-    if (Number.isNaN(limit)) limit = false;
-
     try {
+        let { limit } = req.query;
+        limit = parseInt(limit, 10);
+        if (Number.isNaN(limit)) limit = false;
+
         const { month, artists, songs } = await Trend.findOne({}).populate([
             { path: "artists.artist" },
             { path: "songs.song" },
@@ -64,11 +69,11 @@ const getAllTrends = async (req, res) => {
 };
 
 const getTrendArtists = async (req, res) => {
-    let { limit } = req.query;
-    limit = parseInt(limit, 10);
-    if (Number.isNaN(limit)) limit = false;
-
     try {
+        let { limit } = req.query;
+        limit = parseInt(limit, 10);
+        if (Number.isNaN(limit)) limit = false;
+
         const { month, artists } = await Trend.findOne(
             {},
             "month artists"
@@ -94,11 +99,11 @@ const getTrendArtists = async (req, res) => {
 };
 
 const getTrendSongs = async (req, res) => {
-    let { limit } = req.query;
-    limit = parseInt(limit, 10);
-    if (Number.isNaN(limit)) limit = false;
-
     try {
+        let { limit } = req.query;
+        limit = parseInt(limit, 10);
+        if (Number.isNaN(limit)) limit = false;
+
         const { month, songs } = await Trend.findOne(
             {},
             "month songs"
