@@ -46,4 +46,41 @@ const banUser = async (req, res) => {
     }
 };
 
-export { updateBan, banUser };
+const unbanUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const bUser = (
+            await Ban.findOneAndUpdate(
+                { "users._id": id },
+                { $pull: { users: { _id: id } } }
+            )
+        ).users[0];
+
+        if (!bUser) throw new Error("Invalid user!");
+
+        await Song.updateMany(
+            { artist: bUser._id },
+            { $set: { isBanned: false } },
+            { multi: true }
+        );
+        await Comment.updateMany(
+            { artist: bUser._id },
+            { $set: { isBanned: false } },
+            { multi: true }
+        );
+        await Playlist.updateMany(
+            { artist: bUser._id },
+            { $set: { isBanned: false } },
+            { multi: true }
+        );
+
+        const uUser = new User(bUser.toJSON());
+        await uUser.save();
+
+        res.status(200).json(uUser);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+export { updateBan, banUser, unbanUser };
