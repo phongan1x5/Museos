@@ -200,7 +200,7 @@
                                 <img
                                     src="../../assets/img/thumbnail-1.jpg"
                                     alt=""
-                                    class="song-img"
+                                    class="song-img-info"
                                     style="
                                         width: 120px;
                                         height: 120px;
@@ -253,7 +253,7 @@
                                     <div class="next-title line-clamp">
                                         no love no life
                                     </div>
-                                    <div class="artist-title">
+                                    <div class="artist-title-next">
                                         HIEUTHUHAI, marzuz
                                     </div>
                                 </div>
@@ -298,6 +298,11 @@
         let playpause_btn = document.querySelector(".playpause-track");
         let curr_track = document.createElement("audio");
         let cover_img = document.querySelector(".song-img");
+        let cover_img_info = document.querySelector(".song-img-info");
+        let artist_title = document.querySelector(".artist-title");
+        let next_title = document.querySelector(".next-title");
+        let artist_title_next = document.querySelector(".artist-title-next");
+        let next_img = document.querySelector(".next-img");
         let isPlaying = false;
         let temp_song;
         let track_list;
@@ -367,8 +372,16 @@
             ].title.replace(/\.mp3$/, "");
             artist_name.textContent = track_list[track_index].artist.name;
             song_name.textContent = songNameWithoutExtension;
+            artist_title.textContent = track_list[track_index].artist.name;
             cover_img.src = track_list[track_index].coverPath;
+            next_title.textContent = track_list[track_index++].title.replace(
+                /\.mp3$/,
+                ""
+            );
+            artist_title_next.textContent = track_list[track_index++].artist.name;  
             curr_track.src = trackSrc;
+            next_img.src = track_list[track_index++].coverPath;
+            cover_img_info.src = track_list[track_index].coverPath;
             curr_track.load();
             updateTimer = setInterval(seekUpdate, 1000);
             curr_track.addEventListener("ended", nextTrack);
