@@ -279,9 +279,11 @@ footer{
 .song-cta .song-name{
     color: #FFF;
     font-family: 'iCiel Grandma';
-    font-size: 50px;
+    font-size: 45px;
     font-weight: 700;
     margin-top: 13px;
+    width: 95%;
+    text-align: center;
 }
 .song-cta .cta-wrapper{
     display: flex;
@@ -291,7 +293,7 @@ footer{
 .song-artist .artist-name, .song-artist .featuring-name{
     color: #FFF;
     font-family: 'iCiel Grandma';
-    font-size: 30px;
+    font-size: 28px;
     font-weight: 600;
 }
 .song-cta .song-artist{
@@ -515,5 +517,43 @@ footer{
     padding-left: 29px;
     padding-bottom: 20px;
     margin-top: 20px;
+}
+.playpause-track{
+    cursor: pointer;
+}
+.seek_slider{
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    height: 5px;
+    background: black;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+  }
+  .seek_slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  background: white;
+  cursor: pointer;
+  border-radius: 50%;
+}
+ 
+/* Change the opacity when mouse is hovered */
+.seek_slider:hover {
+  opacity: 1.0;
+}
+ 
+.seek_slider {
+  width: 100%;
+}
+.next-song{
+    cursor: pointer;
+}
+.back-song{
+    cursor: pointer;
 }
   
