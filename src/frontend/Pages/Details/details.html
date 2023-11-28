@@ -374,14 +374,19 @@
             song_name.textContent = songNameWithoutExtension;
             artist_title.textContent = track_list[track_index].artist.name;
             cover_img.src = track_list[track_index].coverPath;
-            next_title.textContent = track_list[track_index++].title.replace(
-                /\.mp3$/,
-                ""
-            );
-            artist_title_next.textContent = track_list[track_index++].artist.name;  
-            curr_track.src = trackSrc;
-            next_img.src = track_list[track_index++].coverPath;
             cover_img_info.src = track_list[track_index].coverPath;
+            let i = 0;
+            console.log(track_list.length);
+            if (track_index == (track_list.length - 1)){
+                i = 0;
+            } else {
+                i = track_index + 1;
+            }
+            console.log(track_list[i].coverPath);
+            next_img.src = track_list[i].coverPath;
+            next_title.textContent = track_list[i].title.replace(/\.mp3$/,"");
+            artist_title_next.textContent = track_list[i].artist.name;  
+            curr_track.src = trackSrc;
             curr_track.load();
             updateTimer = setInterval(seekUpdate, 1000);
             curr_track.addEventListener("ended", nextTrack);
