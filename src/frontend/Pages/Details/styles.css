@@ -257,6 +257,9 @@ footer{
 .song-wrapper{
     padding: 4px 36px 42px 36px;
     margin-bottom: 42px;
+    display: flex;
+    gap: 22px;
+    flex-direction: row;
 }
 .song-cta{
     border-radius: 80px;
@@ -276,26 +279,284 @@ footer{
 .song-cta .song-name{
     color: #FFF;
     font-family: 'iCiel Grandma';
-    font-size: 50px;
+    font-size: 45px;
     font-weight: 700;
     margin-top: 13px;
+    width: 95%;
+    text-align: center;
 }
 .song-cta .cta-wrapper{
     display: flex;
-    max-width: 480px;
-    justify-content: space-between;
+    width: 90%;
+    margin-top: 4px;
 }
 .song-artist .artist-name, .song-artist .featuring-name{
     color: #FFF;
     font-family: 'iCiel Grandma';
-    font-size: 30px;
+    font-size: 28px;
     font-weight: 600;
 }
 .song-cta .song-artist{
     display: flex;
 }
 .song-cta .icon-cta{
+    margin-left: auto;
+    display: block;
+}
+.song-cta .icon-cta .icons{
     display: flex;
-    margin-right: auto;
     gap: 33px;
 }
+/* ======== Track time========= */
+.track-time{
+    width: 85%;
+}
+.track {
+    padding-top: 28px;
+    position: relative;
+  }
+  
+  .track::before {
+  content: '';
+  height: 6px;
+  width: 100%;
+  display: block;
+  background: #D9D9D9;
+  opacity: 0.3;
+  border-radius: 10px;
+  position: absolute;
+  }
+  
+  .track::after { 
+    content: '';
+  height: 6px;
+  width: 85%;
+  display: block;
+  background: #D9D9D9;
+  border-radius: 10px;
+  }
+  .time {
+    opacity: 0.7;
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    padding-top: 9.6px;
+  }
+  .time .total-time{
+    color: #FFF;
+    font-family: iCiel Grandma;
+    font-weight: 700;
+  }
+  .time .last-time{
+    color: #FFF;
+    font-family: iCiel Grandma;
+    font-weight: 700;
+  }
+  .song-action{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    align-items: center;
+  }
+  .song-center{
+    display: flex;
+    gap: 17px;
+    align-items: center;
+  }
+  .action-wrapper{
+    width: 90%;
+  }
+  .song-desc{
+    display: flex;
+    flex-direction: column;
+  }
+  .lyric-wrapper{
+    border-radius: 80px;
+    background: rgba(217, 217, 217, 0.30);
+    width: 60vw;
+    height: 85vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .info-wrapper{
+    display: flex;
+    margin-top: 25px;
+    gap: 15px;
+  }
+  .info-wrapper .song-info{
+    width: 35vw;
+    height: 26vh;
+    border-radius: 40px;
+    background: rgba(217, 217, 217, 0.30);
+    display: flex;
+  }
+  .info-wrapper .next-song{
+    width: 24vw;
+    height: 26vh;
+    border-radius: 40px;
+    background: rgba(217, 217, 217, 0.30);
+  }
+  .lyric-title{
+    color: #FFF;
+    font-family: 'iCiel Grandma';
+    font-size: 50px;
+    font-weight: 700;
+    margin-top: 26px;
+    margin-left: 57px;
+  }
+  .lyric{
+    color: rgba(255, 255, 255, 0.20);
+    font-family: iCiel Grandma;
+    font-size: 30px;
+    font-weight: 700;
+    line-height: normal;
+    margin-left: 57px;
+    margin-right: 80px;
+    margin-top: 40px;
+  }
+  .lyric .singing-lyric{
+    color: #FFF;
+  }
+  .lyric .sang-lyric{
+    color: rgba(255, 255, 255, 0.20);
+  }
+  .lyric .next-lyric{
+    color: #000;
+  }
+  .song-info .follow{
+    width: 120px;
+    color: #fff;
+    font-size: 14px;
+    display: flex;
+    font-weight: 500;
+    border: 2px solid;
+    height: 30px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50px;
+    margin-top: 10px;
+  }
+  .song-info .follow:hover{
+    color: #000;
+    background-color: #FFF;
+  }
+  .song-info .follow-cta{
+    margin-left: 28px;
+    margin-top: 11px;
+  }
+  .info-wrapper .info{
+    color: #FFF;
+    font-family: 'iCiel Grandma';
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 140%; /* 21px */
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+    margin-left: 14px;
+  }
+  .info .artist-title{
+    color: #FFF;
+    font-family: 'iCiel Grandma';
+    font-size: 30px;
+    font-weight: 700;
+  }
+  .info .fb-link,.info .ig-link{
+    color: #FFF;
+    font-family: 'iCiel Grandma';
+    font-size: 15px;
+    font-weight: 400;
+    text-decoration: none;
+    display: flex;
+  }
+  .info .fb-link span,.info .ig-link span{
+    margin-left: 5px;
+  }
+  .line-clamp{
+    display: -webkit-box;
+    -webkit-line-clamp: var(--line-clamp, 1);
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.next-song .sub-title{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 20px;
+    
+}
+.next-song .sub-title span{
+    color: #FFF;
+    font-family: 'iCiel Amerigraf';
+    font-size: 30px;
+    font-weight: 400;
+}
+.next-song .sub-title .playlist-cta{
+    color: #FFF;
+    font-family: 'iCiel Grandma';
+    font-size: 20px;
+    font-weight: 400;
+    text-decoration: none;
+}
+.next-song-info{
+    margin-left: 25px;
+}
+.next-song-info .next-title {
+    color: #FFF;
+    font-family: 'iCiel Grandma';
+    font-size: 30px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+.next-song-info .artist-title-next{
+    color: #FFF;
+    font-family: 'iCiel Grandma';
+    font-size: 15px;
+    font-weight: 400;
+}
+.next-song .next-info{
+    display: flex;
+    align-items: center;
+    padding-left: 29px;
+    padding-bottom: 20px;
+    margin-top: 20px;
+}
+.playpause-track{
+    cursor: pointer;
+}
+.seek_slider{
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    height: 5px;
+    background: black;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+  }
+  .seek_slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  background: white;
+  cursor: pointer;
+  border-radius: 50%;
+}
+ 
+/* Change the opacity when mouse is hovered */
+.seek_slider:hover {
+  opacity: 1.0;
+}
+ 
+.seek_slider {
+  width: 100%;
+}
+.next-song{
+    cursor: pointer;
+}
+.back-song{
+    cursor: pointer;
+}
+  
