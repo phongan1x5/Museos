@@ -166,31 +166,9 @@
                     <div class="lyric-wrapper">
                         <div class="lyric-title">Lyrics</div>
                         <div class="lyric">
-                            <p>
-                                (Hey, Kewtiie) <br /><br />
-
-                                Anh không nhớ nổi lần cuối cùng anh nhìn vào mắt
-                                em đó là từ bao giờ
-                            </p>
-                            <p>
-                                Em từng trách anh chỉ ôm ước mơ, còn không sợ
-                                mất em thì làm sao chờ?
-                            </p>
                             <p class="singing-lyric">
                                 Lúc đó anh có xin lỗi hay không thì kết quả nó
                                 cũng như nhau mà
-                            </p>
-                            <p class="sang-lyric">
-                                Cuối cùng thì hai ta đều ích kỷ, nông nổi, tự
-                                trong cao mà
-                            </p>
-                            <p class="sang-lyric">
-                                Ta từng bắt gặp nhau ở khắp Sài Gòn, chắc là lúc
-                                còn yêu thì muốn tránh cũng khó
-                            </p>
-                            <p class="sang-lyric">
-                                Không thể tin là mình chưa từng gặp lại sau khi
-                                mà anh bước qua cánh cửa đó
                             </p>
                         </div>
                     </div>
@@ -303,12 +281,14 @@
         let next_title = document.querySelector(".next-title");
         let artist_title_next = document.querySelector(".artist-title-next");
         let next_img = document.querySelector(".next-img");
+        let singing_lyric = document.querySelector(".singing-lyric");
         let isPlaying = false;
         let temp_song;
         let track_list;
         let track_index = 0;
         let next_btn = document.querySelector(".next-song");
         let prev_btn = document.querySelector(".back-song");
+        let res;
         function getSongById(songId) {
             var xhr = new XMLHttpRequest();
             var url = " http://localhost:3000/api/v1/songs/" + songId;
@@ -362,35 +342,112 @@
             seek_slider.value = 0;
         }
         function loadTrack(track_index) {
-            clearInterval(updateTimer);
-            resetValues();
-            console.log("Song:", track_list);
-            console.log(track_list[0].filePath);
-            trackSrc = track_list[track_index].filePath;
-            var songNameWithoutExtension = track_list[
-                track_index
-            ].title.replace(/\.mp3$/, "");
-            artist_name.textContent = track_list[track_index].artist.name;
-            song_name.textContent = songNameWithoutExtension;
-            artist_title.textContent = track_list[track_index].artist.name;
-            cover_img.src = track_list[track_index].coverPath;
-            cover_img_info.src = track_list[track_index].coverPath;
-            let i = 0;
-            console.log(track_list.length);
-            if (track_index == (track_list.length - 1)){
-                i = 0;
-            } else {
-                i = track_index + 1;
+            try {
+                clearInterval(updateTimer);
+                resetValues();
+
+                if (!track_list || track_list.length === 0) {
+                    throw new Error("Track list is empty or not loaded");
+                }
+
+                const track = track_list[track_index];
+                if (!track) {
+                    throw new Error("Track not found at index: " + track_index);
+                }
+
+                const trackSrc = track.filePath;
+                const songNameWithoutExtension = track.title.replace(
+                    /\.mp3$/,
+                    ""
+                );
+                artist_name.textContent = track.artist.name;
+                song_name.textContent = songNameWithoutExtension;
+                artist_title.textContent = track.artist.name;
+                cover_img.src = track.coverPath;
+                cover_img_info.src = track.coverPath;
+
+                let nextTrackIndex =
+                    track_index === track_list.length - 1 ? 0 : track_index + 1;
+                const nextTrack = track_list[nextTrackIndex];
+
+                next_img.src = nextTrack.coverPath;
+                next_title.textContent = nextTrack.title.replace(/\.mp3$/, "");
+                artist_title_next.textContent = nextTrack.artist.name;
+
+                curr_track.src = trackSrc;
+                const lyricsPath = track.lyricsPath;
+
+                curr_track.load();
+                updateTimer = setInterval(seekUpdate, 1000);
+
+                fetchLRCFile(lyricsPath)
+                    .then(parseLyric)
+                    .then((lyrics) => {
+                        curr_track.addEventListener("timeupdate", () =>
+                            synchronizeLyrics(lyrics)
+                        );
+                    })
+                    .catch((error) => {
+                        console.error("Error processing lyrics:", error);
+                        // Optionally display an error message on the UI
+                    });
+
+                curr_track.addEventListener("ended", nextTrack);
+            } catch (error) {
+                console.error("Error in loadTrack function:", error);
+                // Optionally handle the error, like showing an error message on the UI
             }
-            console.log(track_list[i].coverPath);
-            next_img.src = track_list[i].coverPath;
-            next_title.textContent = track_list[i].title.replace(/\.mp3$/,"");
-            artist_title_next.textContent = track_list[i].artist.name;  
-            curr_track.src = trackSrc;
-            curr_track.load();
-            updateTimer = setInterval(seekUpdate, 1000);
-            curr_track.addEventListener("ended", nextTrack);
         }
+
+        function synchronizeLyrics(lyrics) {
+            const currentTime = curr_track.currentTime;
+            for (let i = 0; i < lyrics.length; i++) {
+                if (
+                    lyrics[i].time <= currentTime &&
+                    (lyrics[i + 1] ? lyrics[i + 1].time : Infinity) >
+                        currentTime
+                ) {
+                    singing_lyric.textContent = lyrics[i].text;
+                    break;
+                }
+            }
+        }
+
+        function parseLyric(lrc) {
+            const regex = /^\[(?<time>\d{2}:\d{2}(.\d{2})?)\](?<text>.*)/;
+            const lines = lrc.split("\n");
+            const output = [];
+
+            lines.forEach((line) => {
+                const match = regex.exec(line);
+                if (match) {
+                    const time = match.groups.time;
+                    const text = match.groups.text.trim();
+                    output.push({ time: parseTime(time), text });
+                }
+            });
+
+            function parseTime(time) {
+                const [min, sec] = time.split(":");
+                return parseInt(min) * 60 + parseFloat(sec);
+            }
+
+            return output;
+        }
+
+        async function fetchLRCFile(url) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return await response.text();
+            } catch (error) {
+                console.error("Error fetching lyrics file:", error);
+                throw error; // Rethrow to be caught by the caller
+            }
+        }
+
         function seekUpdate() {
             let seekPosition = 0;
 
@@ -469,7 +526,7 @@
         }
         getAllSongs(function (tracks) {
             // Callback function to handle the track_list
-            loadTrack(track_index); // Now you can call loadTrack after getting the songs
+            loadTrack(track_index);
         });
     </script>
 </html>

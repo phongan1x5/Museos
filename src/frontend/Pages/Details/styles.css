@@ -418,6 +418,9 @@ footer{
     color: #FFF;
   }
   .lyric .sang-lyric{
+    color: rgba(255, 255, 255, 0.20);
+  }
+  .lyric .next-lyric{
     color: #000;
   }
   .song-info .follow{
