@@ -315,7 +315,7 @@
         }
         function getAllSongs(callback) {
             var xhr = new XMLHttpRequest();
-            var url = " http://localhost:3000/api/v1/songs/";
+            var url = "http://localhost:3000/api/v1/songs/";
             xhr.open("GET", url, true);
             xhr.onload = function () {
                 if (xhr.status === 200) {

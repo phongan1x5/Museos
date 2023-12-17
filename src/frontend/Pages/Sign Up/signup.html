@@ -24,34 +24,104 @@
                 <div class="title">welcome to museos</div>
                 <div class="login-section">
                     <div class="login-label">login</div>
-                    <div class="row user-wrapper">
-                        <label for="username">username/email</label>
-                        <input type="text" class="user-input" id="username" />
-                    </div>
-                    <div class="row password-wrapper">
-                        <label for="password">password</label>
-                        <input
-                            type="password"
-                            class="password-input"
-                            id="password"
-                        />
-                    </div>
-                    <div class="row password-wrapper">
-                        <label for="password">password verification</label>
-                        <input
-                            type="password"
-                            class="password-input"
-                            id="password"
-                        />
-                    </div>
-                    <div class="confirmation">By signing up you agree with our <a href="#!">Terms of Service</a>, Privacy Policy, and our default <a href="#!">Notification Settings</a>.</div>
-                    <div class="linebreak"></div>
-                    <div class="signup-wrapper">
-                        member? <a href="../Sign In/signin.html" class="signup-link">log in</a>
-                    </div>
-                    <button class="btn continue-cta">continue</button>
+                    <form>
+                        <div class="row user-wrapper">
+                            <label for="email">username/email</label>
+                            <input
+                                type="email"
+                                class="user-input"
+                                id="email"
+                                required
+                            />
+                        </div>
+                        <div class="row password-wrapper">
+                            <label for="password">password</label>
+                            <input
+                                type="password"
+                                class="password-input"
+                                id="password"
+                                required
+                            />
+                        </div>
+                        <div class="row password-wrapper">
+                            <label for="password">password verification</label>
+                            <input
+                                type="password"
+                                class="password-input"
+                                id="password-veri"
+                                required
+                            />
+                        </div>
+                        <div class="error inactive"></div>
+                        <div class="confirmation">
+                            By signing up you agree with our
+                            <a href="#!">Terms of Service</a>, Privacy Policy,
+                            and our default
+                            <a href="#!">Notification Settings</a>.
+                        </div>
+                        <div class="linebreak"></div>
+                        <div class="signup-wrapper">
+                            member?
+                            <a href="../Sign In/signin.html" class="signup-link"
+                                >log in</a
+                            >
+                        </div>
+                        <button type="submit" class="btn continue-cta">
+                            continue
+                        </button>
+                    </form>
                 </div>
             </div>
         </main>
+        <script>
+            const form = document.querySelector("form");
+            form.addEventListener("submit", async (e) => {
+                const email = document.querySelector("#email").value;
+                const password = document.querySelector("#password").value;
+                const password_veri =
+                    document.querySelector("#password-veri").value;
+                const display = document.querySelector(".error");
+                const dob = new Date();
+                const name = "user";
+
+                e.preventDefault();
+                display.textContent = "";
+                if (password !== password_veri) {
+                    display.classList.remove("inactive");
+                    display.textContent =
+                        "Password and password verification do not match.";
+                    return;
+                }
+                try {
+                    const res = await fetch(
+                        "http://localhost:3000/api/v1/users",
+                        {
+                            method: "POST",
+                            body: JSON.stringify({
+                                email: email,
+                                rawPassword: password,
+                                name: name,
+                                DOB: dob,
+                            }),
+                            headers: { "Content-Type": "application/json" },
+                        }
+                    );
+                    const data = await res.json();
+                    if (res.status === 500) {
+                        display.classList.remove("inactive");
+                        display.textContent = "Failed to sign up";
+                        console.error(`HTTP error! Status: ${response.status}`);
+                    } else {
+                        if (data._id) {
+                            // Store the MongoDB _id in local storage
+                            localStorage.setItem("userMongoId", data._id);
+                        }
+                        window.location.href = "../../index.html";
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
+            });
+        </script>
     </body>
 </html>

@@ -170,3 +170,24 @@ body{
     font-size: 20px;
     font-weight: 400;
 }
+.login-section form{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.error{
+    font-family: 'iCiel Grandma';
+    background-color: rgba(255, 0, 0, 0.5);
+    border-radius: 5px;
+    font-size: 20px;
+    font-weight: 700;
+    color: white;
+    text-align: center;
+    width: 40vw;
+    height: 30px;
+    margin-bottom: 10px;
+}
+.inactive {
+    display: none;
+}
