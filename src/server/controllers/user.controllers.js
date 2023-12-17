@@ -43,16 +43,12 @@ const createUser = async (req, res) => {
 const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
-        User.findOne({ email }).then((user) => {
-            if (user) {
-                const compPasswordRes = bcrypt.compareSync(
-                    password,
-                    user.password
-                );
-                if (compPasswordRes) return res.status(200).json(user);
-            }
+        const user = await User.findOne({ email });
+
+        if (!user || !bcrypt.compareSync(password, user.password))
             throw new Error("Invalid email or password!");
-        });
+
+        res.status(200).json(user);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
