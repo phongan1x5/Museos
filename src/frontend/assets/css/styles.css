@@ -105,6 +105,9 @@ body{
     margin-left: auto;
     display: flex;
     gap:40px;
+    color: #FFF;
+    font-size: 1.5rem;
+    font-weight: 400;
 }
 .navbar .search-input{
     border-radius: 60px;

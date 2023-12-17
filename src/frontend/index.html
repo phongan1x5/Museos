@@ -3,6 +3,13 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            http-equiv="cache-control"
+            content="no-cache, no-store, must-revalidate"
+        />
+        <meta http-equiv="expires" content="0" />
+        <meta http-equiv="pragma" content="no-cache" />
+
         <title>MUSEOS</title>
         <!-- <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -57,8 +64,16 @@
                         </ul>
 
                         <div class="action">
-                            <a href="./Pages/Sign In/signin.html" class="action-link">login</a>
-                            <a href="./Pages/Sign Up/signup.html" class="action-link">sign up</a>
+                            <a
+                                href="./Pages/Sign In/signin.html"
+                                class="action-link"
+                                >login</a
+                            >
+                            <a
+                                href="./Pages/Sign Up/signup.html"
+                                class="action-link"
+                                >sign up</a
+                            >
                         </div>
                     </div>
                     <div class="big-logo">
@@ -75,21 +90,33 @@
                     <div class="song-label">top songs</div>
                     <ul class="list-songs">
                         <li class="title">
-                            <img src="./assets/img/singer-1.jpg" alt="" class="song-img">
+                            <img
+                                src="./assets/img/singer-1.jpg"
+                                alt=""
+                                class="song-img"
+                            />
                             <div class="song-desc">
                                 <h3 class="sub-title">Song 1</h3>
                                 <p class="desc">by Artist 1</p>
                             </div>
                         </li>
                         <li class="title">
-                            <img src="./assets/img/singer-2.jpg" alt="" class="song-img">
+                            <img
+                                src="./assets/img/singer-2.jpg"
+                                alt=""
+                                class="song-img"
+                            />
                             <div class="song-desc">
                                 <h3 class="sub-title">Song 2</h3>
                                 <p class="desc">by Artist 2</p>
                             </div>
                         </li>
                         <li class="title">
-                            <img src="./assets/img/singer-3.jpg" alt="" class="song-img">
+                            <img
+                                src="./assets/img/singer-3.jpg"
+                                alt=""
+                                class="song-img"
+                            />
                             <div class="song-desc">
                                 <h3 class="sub-title">Song 3</h3>
                                 <p class="desc">by Artist 3</p>
@@ -102,15 +129,27 @@
                     <div class="artist-label">top artists</div>
                     <ul class="list-artists">
                         <li class="title">
-                            <img src="./assets/img/singer-1.jpg" alt="" class="artist-img">
+                            <img
+                                src="./assets/img/singer-1.jpg"
+                                alt=""
+                                class="artist-img"
+                            />
                             <h3 class="sub-title">Artist 1</h3>
                         </li>
                         <li class="title">
-                            <img src="./assets/img/singer-2.jpg" alt="" class="artist-img">
+                            <img
+                                src="./assets/img/singer-2.jpg"
+                                alt=""
+                                class="artist-img"
+                            />
                             <h3 class="sub-title">Artist 2</h3>
                         </li>
                         <li class="title">
-                            <img src="./assets/img/singer-3.jpg" alt="" class="artist-img">
+                            <img
+                                src="./assets/img/singer-3.jpg"
+                                alt=""
+                                class="artist-img"
+                            />
                             <h3 class="sub-title">Artist 3</h3>
                         </li>
                     </ul>
@@ -123,15 +162,75 @@
                             <img src="./assets/img/footer-icon.svg" alt="" />
                             <div class="logo-text">museos</div>
                         </div>
-                        <div class="copyright">Copyright © 2023 Faculty of Information Technology VNU-HCMUS. All rights reserved.</div>
+                        <div class="copyright">
+                            Copyright © 2023 Faculty of Information Technology
+                            VNU-HCMUS. All rights reserved.
+                        </div>
                     </div>
                     <div class="right-footer">
-                        <a href="#!" class="terms-condition">terms and conditions</a>
+                        <a href="#!" class="terms-condition"
+                            >terms and conditions</a
+                        >
                         <a href="#!" class="faq">FAQ</a>
                         <a href="#!" class="contacts">contacts</a>
                     </div>
                 </div>
             </footer>
         </main>
+        <script>
+            let userName = "";
+            function logoutUser() {
+                // Remove user data from localStorage
+                localStorage.removeItem("userMongoId");
+                const userNamePlaceholder = document.querySelector(".action");
+                if (userNamePlaceholder) {
+                    userNamePlaceholder.textContent = "";
+                    userNamePlaceholder.innerHTML ='<a href="./Pages/Sign In/signin.html" class="action-link" >login</a><a href="./Pages/Sign Up/signup.html" class="action-link">sign up</a>'
+                }
+                // Redirect to the login page or any other desired page
+                window.location.href = "#"; // Replace with the actual URL
+            }
+            function getUser() {
+                if (userMongoId) {
+                    // Make a GET request to the getUserById API
+                    fetch(`http://localhost:3000/api/v1/users/${userMongoId}`)
+                        .then((response) => {
+                            if (response.ok) {
+                                return response.json();
+                            } else {
+                                throw new Error(
+                                    `HTTP error! Status: ${response.status}`
+                                );
+                            }
+                        })
+                        .then((data) => {
+                            // Handle the API response here (e.g., display user data)
+                            console.log(data);
+                            userName = data.name;
+                            const userNamePlaceholder =
+                                document.querySelector(".action");
+                            console.log(userName);
+                            if (userNamePlaceholder) {
+                                userNamePlaceholder.textContent = userName;
+                                userNamePlaceholder.innerHTML +=
+                                    '<a href="#" id="logoutlink" class="action-link" onclick="logoutUser()">log out</a>';
+                            }
+                            // Update the page with user data, such as name, total counts, etc.
+                            // You can update placeholders or elements with this data
+                        })
+                        .catch((error) => {
+                            // Handle any errors that occur during the API request
+                            console.error(error);
+                        });
+                } else {
+                    // Handle the case where userMongoId is not available in local storage
+                    console.error("MongoDB _id not found in local storage.");
+                }
+            }
+            const userMongoId = localStorage.getItem("userMongoId");
+            if (userMongoId) {
+                getUser();
+            }
+        </script>
     </body>
 </html>
