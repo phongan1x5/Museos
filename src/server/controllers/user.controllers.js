@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import User from "../mongodb/models/user.js";
 import Playlist from "../mongodb/models/playlist.js";
 import Ban from "../mongodb/models/ban.js";
+import Admin from "../mongodb/models/admin.js";
 import { baseDownURL, getSignedURL } from "../utils/aws.utils.js";
 import { makeSortQuery } from "../utils/misc.utils.js";
 
@@ -43,7 +44,8 @@ const createUser = async (req, res) => {
 const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
-        const user = await User.findOne({ email });
+        const user =
+            (await User.findOne({ email })) || (await Admin.findOne({ email }));
 
         if (!user || !bcrypt.compareSync(password, user.password))
             throw new Error("Invalid email or password!");
