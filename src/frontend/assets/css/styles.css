@@ -84,7 +84,7 @@ body{
     height: 4px;
     border-radius: 4px;
     background-color: white;
-    bottom:3px;
+    top:22px;
     left: 0;
     transform-origin: right;
     transform: scaleX(0);
@@ -104,10 +104,11 @@ body{
 .navbar .action{
     margin-left: auto;
     display: flex;
-    gap:40px;
+    gap:30px;
     color: #FFF;
     font-size: 1.5rem;
     font-weight: 400;
+    align-items: center;
 }
 .navbar .search-input{
     border-radius: 60px;
@@ -255,4 +256,8 @@ footer{
     gap: 40px;
     margin-right: 30px;
     padding-top: 23px;
+}
+.avatar-img{
+    width: 30px;
+    border-radius: 15px;
 }

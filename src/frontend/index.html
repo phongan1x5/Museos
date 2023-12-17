@@ -207,13 +207,14 @@
                             // Handle the API response here (e.g., display user data)
                             console.log(data);
                             userName = data.name;
+                            avata_src = data.avatarPath;
                             const userNamePlaceholder =
                                 document.querySelector(".action");
                             console.log(userName);
                             if (userNamePlaceholder) {
-                                userNamePlaceholder.textContent = userName;
+                                userNamePlaceholder.innerHTML = '';
                                 userNamePlaceholder.innerHTML +=
-                                    '<a href="#" id="logoutlink" class="action-link" onclick="logoutUser()">log out</a>';
+                                    `<img src="${avata_src}" class="avatar-img"/><span>${userName}</span><a href="#" id="logoutlink" class="action-link" onclick="logoutUser()">log out</a>`;
                             }
                             // Update the page with user data, such as name, total counts, etc.
                             // You can update placeholders or elements with this data
