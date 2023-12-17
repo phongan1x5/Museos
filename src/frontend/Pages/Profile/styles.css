@@ -579,7 +579,7 @@ footer{
     font-family: iCiel Amerigraf;
     font-size: 50px;
     font-weight: 400;
-    margin-left: 170px;
+    text-align: center;
 }
 a.list-cta{
     margin-left: auto;

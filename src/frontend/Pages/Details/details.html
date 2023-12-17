@@ -36,7 +36,7 @@
                                 <a href="#!">library</a>
                             </li>
                             <li>
-                                <a href="#!">upload</a>
+                                <a href="#">upload</a>
                             </li>
                             <li>
                                 <a href="#!">settings</a>
@@ -289,6 +289,9 @@
         let next_btn = document.querySelector(".next-song");
         let prev_btn = document.querySelector(".back-song");
         let res;
+        let songMongoId = "";
+        let likedSong;
+        let likedSongs = [];
         function getSongById(songId) {
             var xhr = new XMLHttpRequest();
             var url = " http://localhost:3000/api/v1/songs/" + songId;
@@ -365,7 +368,18 @@
                 artist_title.textContent = track.artist.name;
                 cover_img.src = track.coverPath;
                 cover_img_info.src = track.coverPath;
-
+                songMongoId = track._id;
+                let heartIcon = document.querySelector(".img-heart img");
+                for (let i = 0; i < likedSongs.length; i++) {
+                    if (songMongoId === likedSongs[i]) {
+                        heartIcon.src = "../../assets/img/heart-filled.svg";
+                        console.log(true);
+                        break;
+                    } else {
+                        document.querySelector(".img-heart img");
+                        heartIcon.src = "../../assets/img/heart.svg";
+                    }
+                }
                 let nextTrackIndex =
                     track_index === track_list.length - 1 ? 0 : track_index + 1;
                 const nextTrack = track_list[nextTrackIndex];
@@ -523,6 +537,101 @@
             // Load and play the new track
             loadTrack(track_index);
             playTrack();
+        }
+        function likeSong(userMongoId, songMongoId) {
+            // Replace with your API endpoint
+            if (!userMongoId) {
+                alert("You have to login first to like this song");
+            }
+            const apiUrl = `http://localhost:3000/api/v1/songs/like?user=${userMongoId}&song=${songMongoId}`;
+
+            // Send a POST request to like the song
+            fetch(apiUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        // Liked the song successfully
+                        // You can update the UI to show that the song is liked (e.g., change the heart icon color)
+                        const heartIcon =
+                            document.querySelector(".img-heart img");
+                        heartIcon.src = "../../assets/img/heart-filled.svg"; // Change the heart icon to a filled heart
+                    } else {
+                        // Handle the case where liking the song failed
+                        console.error("Failed to like the song.");
+                    }
+                })
+                .catch((error) => {
+                    console.error(
+                        "An error occurred while liking the song:",
+                        error
+                    );
+                });
+        }
+
+        // Add an event listener to the heart icon to call the likeSong function
+        const heartIcon = document.querySelector(".img-heart img");
+        heartIcon.addEventListener("click", () => {
+            likeSong(userMongoId, songMongoId);
+        });
+        function logoutUser() {
+                // Remove user data from localStorage
+                localStorage.removeItem("userMongoId");
+                // Redirect to the login page or any other desired page
+                window.location.href = "../../index.html"; // Replace with the actual URL
+            }
+        function getUser() {
+            if (userMongoId) {
+                // Make a GET request to the getUserById API
+                fetch(`http://localhost:3000/api/v1/users/${userMongoId}`)
+                    .then((response) => {
+                        if (response.ok) {
+                            return response.json();
+                        } else {
+                            throw new Error(
+                                `HTTP error! Status: ${response.status}`
+                            );
+                        }
+                    })
+                    .then((data) => {
+                        // Handle the API response here (e.g., display user data)
+                        console.log(data);
+                        userName = data.name;
+                        avata_src = data.avatarPath;
+                        const userNamePlaceholder =
+                            document.querySelector(".action");
+                        console.log(userName);
+                        const likedSongsPlaylist = data.playlists.find(
+                            (playlist) => playlist.title === "Liked Songs"
+                        );
+                        likedSongs = likedSongsPlaylist
+                            ? likedSongsPlaylist.songs
+                            : [];
+
+                        console.log(likedSongs);
+                        if (userNamePlaceholder) {
+                            userNamePlaceholder.innerHTML = "";
+                            userNamePlaceholder.innerHTML += `<img src="${avata_src}" class="avatar-img"/><a href="../Profile/profile.html" style="text-decoration: none; color: white;" class="action-link">${userName}</a><a href="#" id="logoutlink" class="action-link" onclick="logoutUser()">log out</a>`;
+                        }
+                        // Update the page with user data, such as name, total counts, etc.
+                        // You can update placeholders or elements with this data
+                    })
+                    .catch((error) => {
+                        // Handle any errors that occur during the API request
+                        console.error(error);
+                    });
+            } else {
+                // Handle the case where userMongoId is not available in local storage
+                console.error("MongoDB _id not found in local storage.");
+            }
+        }
+        const userMongoId = localStorage.getItem("userMongoId");
+
+        if (userMongoId) {
+            getUser();
         }
         getAllSongs(function (tracks) {
             // Callback function to handle the track_list

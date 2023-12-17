@@ -559,4 +559,8 @@ footer{
 .back-song{
     cursor: pointer;
 }
+.avatar-img{
+    width: 30px;
+    border-radius: 15px;
+}
   

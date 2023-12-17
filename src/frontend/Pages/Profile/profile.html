@@ -33,7 +33,7 @@
                                 <a href="../../index.html">home</a>
                             </li>
                             <li>
-                                <a href="#!">library</a>
+                                <a href="../Details/details.html">library</a>
                             </li>
                             <li>
                                 <a href="#!">upload</a>
@@ -65,7 +65,7 @@
                 <div class="song-cta">
                     <img src="" alt="" class="avatar-cover" />
                     <div class="title">
-                        <div class="username-title"></div>
+                        <div class="username-title" style="width: 100%;"></div>
                         <a href="#" class="list-cta" onclick="openForm()">
                             <img src="../../assets/img/detail_profile.svg" />
                         </a>
@@ -175,6 +175,7 @@
                     const data = await res.json();
                     if (res.status === 200){
                         console.log('Updated User:', data.updatedUser);
+                        location.reload();
                     } else {
                         console.error("Failed to update");
                     }
@@ -202,6 +203,12 @@
 
                     reader.readAsDataURL(input.files[0]);
                 }
+            }
+            function logoutUser() {
+                // Remove user data from localStorage
+                localStorage.removeItem("userMongoId");
+                // Redirect to the login page or any other desired page
+                window.location.href = "../../index.html"; // Replace with the actual URL
             }
             function getUser() {
                 if (userMongoId) {
