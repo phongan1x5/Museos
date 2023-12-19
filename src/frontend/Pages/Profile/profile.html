@@ -283,14 +283,6 @@
                             body: JSON.stringify(requestBody),
                         }
                     );
-                    const res = await fetch(
-                        `http://localhost:3000/api/v1/users/${userMongoId}`,
-                        {
-                            method: "PATCH",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify(requestBody),
-                        }
-                    );
                     const data = await res.json();
                     if (res.status === 200) {
                         if (avatar_file) {
