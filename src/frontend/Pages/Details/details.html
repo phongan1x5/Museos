@@ -79,7 +79,7 @@
                                     <a href="#"
                                         ><img
                                             src="../../assets/img/heart.svg"
-                                            alt=""
+                                            alt="" id="heart-unliked"
                                     /></a>
                                 </div>
                                 <div class="img-down">
@@ -290,7 +290,7 @@
         let prev_btn = document.querySelector(".back-song");
         let res;
         let songMongoId = "";
-        let likedSong;
+        let likedCheck = false;
         let likedSongs = [];
         function getSongById(songId) {
             var xhr = new XMLHttpRequest();
@@ -368,18 +368,8 @@
                 artist_title.textContent = track.artist.name;
                 cover_img.src = track.coverPath;
                 cover_img_info.src = track.coverPath;
-                songMongoId = track._id;
-                let heartIcon = document.querySelector(".img-heart img");
-                for (let i = 0; i < likedSongs.length; i++) {
-                    if (songMongoId === likedSongs[i]) {
-                        heartIcon.src = "../../assets/img/heart-filled.svg";
-                        console.log(true);
-                        break;
-                    } else {
-                        document.querySelector(".img-heart img");
-                        heartIcon.src = "../../assets/img/heart.svg";
-                    }
-                }
+              
+                setLikeSong();
                 let nextTrackIndex =
                     track_index === track_list.length - 1 ? 0 : track_index + 1;
                 const nextTrack = track_list[nextTrackIndex];
@@ -411,6 +401,23 @@
                 console.error("Error in loadTrack function:", error);
                 // Optionally handle the error, like showing an error message on the UI
             }
+        }
+
+        function setLikeSong(){
+            const track = track_list[track_index];
+            songMongoId = track._id;
+            let heartIcon = document.querySelector(".img-heart img");
+                for (let i = 0; i < likedSongs.length; i++) {
+                    if (songMongoId === likedSongs[i]) {
+                        heartIcon.src = "../../assets/img/heart-filled.svg";
+                        likedCheck = true;
+                        break;
+                    } else {
+                        document.querySelector(".img-heart img");
+                        heartIcon.src = "../../assets/img/heart.svg";
+                        likedCheck = false;
+                    }
+                }
         }
 
         function synchronizeLyrics(lyrics) {
@@ -558,7 +565,8 @@
                         // You can update the UI to show that the song is liked (e.g., change the heart icon color)
                         const heartIcon =
                             document.querySelector(".img-heart img");
-                        heartIcon.src = "../../assets/img/heart-filled.svg"; // Change the heart icon to a filled heart
+                        heartIcon.src = "../../assets/img/heart-filled.svg";
+                        likedCheck = true;// Change the heart icon to a filled heart
                     } else {
                         // Handle the case where liking the song failed
                         console.error("Failed to like the song.");
@@ -575,8 +583,38 @@
         // Add an event listener to the heart icon to call the likeSong function
         const heartIcon = document.querySelector(".img-heart img");
         heartIcon.addEventListener("click", () => {
-            likeSong(userMongoId, songMongoId);
+            if (likedCheck == false) {
+                likeSong(userMongoId, songMongoId);
+            } else {
+                unlikeSong(userMongoId, songMongoId);
+            }
+            
         });
+        function unlikeSong(userMongoId, songMongoId){
+            if (!userMongoId) {
+                alert("You have to login first to unlike this song");
+            }
+            const apiUrl = `http://localhost:3000/api/v1/songs/unlike?user=${userMongoId}&song=${songMongoId}`;
+            fetch(apiUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+                .then((response) => {
+                    if (response.ok){
+                        const heartIcon =
+                            document.querySelector(".img-heart img");
+                        heartIcon.src = "../../assets/img/heart.svg";
+                        likedCheck = false;
+                    } else {
+                        console.error("Failed to unlike song.");
+                    }
+                })
+                .catch((error) => {
+                    console.error("An error occurred while unliking the song:", error);
+                });
+        }
         function logoutUser() {
                 // Remove user data from localStorage
                 localStorage.removeItem("userMongoId");
@@ -610,7 +648,7 @@
                         likedSongs = likedSongsPlaylist
                             ? likedSongsPlaylist.songs
                             : [];
-
+                        setLikeSong();
                         console.log(likedSongs);
                         if (userNamePlaceholder) {
                             userNamePlaceholder.innerHTML = "";

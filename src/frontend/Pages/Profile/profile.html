@@ -66,6 +66,7 @@
                     <img src="" alt="" class="avatar-cover" />
                     <div class="title">
                         <div class="username-title" style="width: 100%"></div>
+                        <div class="username-title" style="width: 100%"></div>
                         <a href="#" class="list-cta" onclick="openForm()">
                             <img src="../../assets/img/detail_profile.svg" />
                         </a>
@@ -121,7 +122,115 @@
                     <div class="information"></div>
                 </div>
                 <div class="song-desc">
-                    <div class="lyric-wrapper"></div>
+                    <div class="lyric-wrapper">
+                        <div class="upload-section">
+                            <div class="upload-title">
+                                <span>uploaded songs</span>
+                                <div class="more-action">
+                                    <a href="#" onclick="viewMore()"
+                                        >view more</a
+                                    >
+                                </div>
+                            </div>
+                            <div class="upload-area">
+                                upload your beautiful melody
+                                <a href="#">here</a>
+                            </div>
+                        </div>
+                        <div class="fav-song">
+                            <div class="song-title">
+                                <span>favorite songs</span>
+                                <div class="more-action">
+                                    <a href="#">view more</a>
+                                </div>
+                            </div>
+                            <ul class="list-song">
+                                <li class="playlist">
+                                    <img
+                                        src="../../assets/img/avatar.png"
+                                        alt=""
+                                        class="song-img"
+                                    />
+                                    <div class="playlist-info">Playlist 1</div>
+                                </li>
+                                <li class="song">
+                                    <div class="info-section">
+                                        <img
+                                            src="../../assets/img/avatar.png"
+                                            alt=""
+                                            class="song-img"
+                                        />
+                                        <div class="song-info">
+                                            <span class="song-name"
+                                                >Exit Sign</span
+                                            >
+                                            <span class="song-writer"
+                                                >HIEUTHUHAI, marzuz</span
+                                            >
+                                        </div>
+                                    </div>
+                                    <span class="viewers">554,012</span>
+                                    <span class="time-section">3:21</span>
+                                </li>
+                                <li class="song">
+                                    <div class="info-section">
+                                        <img
+                                            src="../../assets/img/avatar.png"
+                                            alt=""
+                                            class="song-img"
+                                        />
+                                        <div class="song-info">
+                                            <span class="song-name"
+                                                >Không thể say</span
+                                            >
+                                            <span class="song-writer"
+                                                >HIEUTHUHAI</span
+                                            >
+                                        </div>
+                                    </div>
+                                    <span class="viewers">564,675</span>
+                                    <span class="time-section">2:50</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="fav-artist">
+                            <span class="fav-title">favorite artists</span>
+                            <div class="list-artist">
+                                <div class="artist-area">
+                                    <img
+                                        src="../../assets/img/artist.png"
+                                        alt="Artist image"
+                                        class="artist-img"
+                                    />
+                                    <span class="artist-name">MANBO</span>
+                                </div>
+                                <div class="artist-area">
+                                    <img
+                                        src="../../assets/img/artist.png"
+                                        alt="Artist image"
+                                        class="artist-img"
+                                    />
+                                    <span class="artist-name">HURRYKNG</span>
+                                </div>
+                                <div class="artist-area">
+                                    <img
+                                        src="../../assets/img/artist.png"
+                                        alt="Artist image"
+                                        class="artist-img"
+                                    />
+                                    <span class="artist-name">Negav</span>
+                                </div>
+                                <div class="artist-area">
+                                    <img
+                                        src="../../assets/img/artist.png"
+                                        alt="Artist image"
+                                        class="artist-img"
+                                    />
+                                    <span class="artist-name">B Ray</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <footer class="footer">
@@ -174,6 +283,14 @@
                             body: JSON.stringify(requestBody),
                         }
                     );
+                    const res = await fetch(
+                        `http://localhost:3000/api/v1/users/${userMongoId}`,
+                        {
+                            method: "PATCH",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(requestBody),
+                        }
+                    );
                     const data = await res.json();
                     if (res.status === 200) {
                         if (avatar_file) {
@@ -201,7 +318,16 @@
             function openForm() {
                 document.getElementById("myForm").style.display = "block";
             }
-
+            function viewMore() {
+                const rightSection = document.querySelector(".lyric-wrapper");
+                rightSection.innerHTML =
+                    '<div class="back-section"><a href="#" onclick="backSection()"><img src="../../assets/img/back-action.svg" alt="" class="back-action"/></a></div><div class="upload-opener"><input type="text" id="songname" class="song-input" placeholder="enter song’s name"/><div class="drag-action"> drag or click <a href="#">here</a> to upload song’s cover</div> <div class="drag-action">drag or click <a href="#">here</a> to add file </div></div><button class="upload-action"><img src="../../assets/img/up-arrow.svg"><span>Upload</span></button>';
+            }
+            function backSection() {
+                const rightSection = document.querySelector(".lyric-wrapper");
+                rightSection.innerHTML =
+                    '<div class="upload-section"><div class="upload-title"><span>uploaded songs</span><div class="more-action"><a href="#" onclick="viewMore()">view more</a></div></div><div class="upload-area">upload your beautiful melody<a href="#">here</a></div></div><div class="fav-song"><div class="song-title"><span>favorite songs</span><div class="more-action"><a href="#">view more</a></div></div><ul class="list-song"><li class="playlist"> <img src="../../assets/img/avatar.png" alt="" class="song-img"><div class="playlist-info">Playlist 1</div></li> <li class="song"> <div class="info-section"> <img src="../../assets/img/avatar.png" alt="" class="song-img"> <div class="song-info"> <span class="song-name">Exit Sign</span> <span class="song-writer">HIEUTHUHAI, marzuz</span> </div> </div> <span class="viewers">554,012</span> <span class="time-section">3:21</span> </li> <li class="song"> <div class="info-section"> <img src="../../assets/img/avatar.png" alt="" class="song-img"> <div class="song-info"> <span class="song-name">Không thể say</span> <span class="song-writer">HIEUTHUHAI</span> </div></div><span class="viewers">564,675</span> <span class="time-section">2:50</span> </li>  </ul> </div> <div class="fav-artist"><span class="fav-title">favorite artists</span> <div class="list-artist"> <div class="artist-area">  <img src="../../assets/img/artist.png" alt="Artist image" class="artist-img"> <span class="artist-name">MANBO</span> </div> <div class="artist-area"> <img src="../../assets/img/artist.png" alt="Artist image" class="artist-img"> <span class="artist-name">HURRYKNG</span> </div> <div class="artist-area"> <img src="../../assets/img/artist.png" alt="Artist image" class="artist-img"> <span class="artist-name">Negav</span> </div> <div class="artist-area"> <img src="../../assets/img/artist.png" alt="Artist image" class="artist-img"> <span class="artist-name">B Ray</span> </div> </div> </div>';
+            }
             function closeForm() {
                 document.getElementById("myForm").style.display = "none";
             }
