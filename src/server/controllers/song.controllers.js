@@ -10,7 +10,7 @@ const createSong = async (req, res) => {
         const { title, artist, length, upLyrics = "", upCover = "" } = req.body;
         let newSong = await Song.create({ title, artist, length });
 
-        const fileUpLink = await getSignedURL(`${newSong._id}_file`);
+        const fileUpLink = await getSignedURL(`${newSong._id}_file.mp3`);
         const linkUpdates = {
             filePath: `${baseDownURL}/${newSong._id}_file.mp3`,
         };
@@ -20,12 +20,12 @@ const createSong = async (req, res) => {
 
         if (upLyrics) {
             linkUpdates.lyricsPath = `${baseDownURL}/${newSong._id}_lyrics.txt`;
-            lyricsUpLink = await getSignedURL(`${newSong._id}_lyrics`);
+            lyricsUpLink = await getSignedURL(`${newSong._id}_lyrics.txt`);
         }
 
         if (upCover) {
             linkUpdates.coverPath = `${baseDownURL}/${newSong._id}_cover.png`;
-            coverUpLink = await getSignedURL(`${newSong._id}_cover`);
+            coverUpLink = await getSignedURL(`${newSong._id}_cover.png`);
         }
 
         newSong = await Song.findByIdAndUpdate(newSong._id, linkUpdates, {
@@ -131,12 +131,12 @@ const updateSong = async (req, res) => {
 
         if (newLyrics) {
             updates.lyricsPath = `${baseDownURL}/${id}_lyrics.txt`;
-            lyricsUpLink = await getSignedURL(`${id}_lyrics`);
+            lyricsUpLink = await getSignedURL(`${id}_lyrics.txt`);
         }
 
         if (newCover) {
             updates.coverPath = `${baseDownURL}/${id}_cover.png`;
-            coverUpLink = await getSignedURL(`${id}_cover`);
+            coverUpLink = await getSignedURL(`${id}_cover.png`);
         }
 
         const updatedSong = await Song.findByIdAndUpdate(id, updates, {

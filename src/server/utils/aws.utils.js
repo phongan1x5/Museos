@@ -13,9 +13,9 @@ aws.config.update({
 const Bucket = process.env.BUCKET;
 const baseDownURL = `https://${process.env.BUCKET}.s3.${process.env.REGION}.amazonaws.com`;
 
-const getSignedURL = async (fileID, expireMins) => {
+const getSignedURL = async (fileID, expireMins = 1) => {
     const aws3 = new aws.S3();
-    const Key = `${fileID}.mp3`;
+    const Key = fileID;
     const Expires = 60 * expireMins;
     return aws3.getSignedUrl("putObject", { Bucket, Key, Expires });
 };

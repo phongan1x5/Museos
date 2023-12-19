@@ -65,7 +65,7 @@
                 <div class="song-cta">
                     <img src="" alt="" class="avatar-cover" />
                     <div class="title">
-                        <div class="username-title" style="width: 100%;"></div>
+                        <div class="username-title" style="width: 100%"></div>
                         <a href="#" class="list-cta" onclick="openForm()">
                             <img src="../../assets/img/detail_profile.svg" />
                         </a>
@@ -152,35 +152,50 @@
         <script>
             let avata_src = "";
             let date_string = "";
-            let avatar_Check = false;
+            let avatar_file = false;
             const form = document.querySelector("form");
             form.addEventListener("submit", async (e) => {
                 e.preventDefault();
                 const email = document.querySelector("#email").value;
                 const name = document.querySelector("#name").value;
                 const dob = document.querySelector("#birthday").value;
-                const newAvatar = document.querySelector(".change_avatar").src;
                 const requestBody = {
                     email: email,
                     name: name,
                     DOB: dob,
-                    newAvatar: newAvatar, // Assuming newAvatar is the link
                 };
+                if (avatar_file) requestBody.newAvatar = true;
                 try {
-                    const res = await fetch(`http://localhost:3000/api/v1/users/${userMongoId}`, {
-                        method: "PATCH",
-                        headers: {'Content-Type': 'application/json',},
-                        body: JSON.stringify(requestBody)
-                    });
+                    const res = await fetch(
+                        `http://localhost:3000/api/v1/users/${userMongoId}`,
+                        {
+                            method: "PATCH",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(requestBody),
+                        }
+                    );
                     const data = await res.json();
-                    if (res.status === 200){
-                        console.log('Updated User:', data.updatedUser);
-                        location.reload();
+                    if (res.status === 200) {
+                        if (avatar_file) {
+                            let res = await fetch(data.avatarUpLink, {
+                                method: "PUT",
+                                body: avatar_file,
+                            });
+                            if (res.status === 200)
+                                console.log(
+                                    `Successfully uploaded to ${data.avatarUpLink}`
+                                );
+                            else console.log(`Failed to upload avatar`);
+                        }
+                        console.log("Updated User:", data.updatedUser);
+                        //location.reload();
                     } else {
                         console.error("Failed to update");
                     }
-                } catch (error){
-                    console.error('An error occurred:', error);
+                    avatar_file = false;
+                } catch (error) {
+                    avatar_file = false;
+                    console.error("An error occurred:", error);
                 }
             });
             function openForm() {
@@ -202,6 +217,7 @@
                     };
 
                     reader.readAsDataURL(input.files[0]);
+                    avatar_file = input.files[0];
                 }
             }
             function logoutUser() {

@@ -24,7 +24,7 @@ const createPlaylist = async (req, res) => {
                 { new: true }
             );
 
-            coverUpLink = await getSignedURL(`${newPlaylist._id}_cover`);
+            coverUpLink = await getSignedURL(`${newPlaylist._id}_cover.png`);
         }
 
         await mongoose.model("User").findByIdAndUpdate(creator, {
@@ -66,7 +66,7 @@ const updatePlaylist = async (req, res) => {
         let coverUpLink = "";
         if (newCover) {
             updates.coverPath = `${baseDownURL}/${id}_cover.png`;
-            coverUpLink = await getSignedURL(`${id}_cover`);
+            coverUpLink = await getSignedURL(`${id}_cover.png`);
         }
 
         const $push = {};

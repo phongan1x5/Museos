@@ -118,7 +118,7 @@ const updateUser = async (req, res) => {
         let avatarUpLink = "";
         if (newAvatar) {
             updates.avatarPath = `${baseDownURL}/${id}_avatar.png`;
-            avatarUpLink = await getSignedURL(`${id}_avatar`);
+            avatarUpLink = await getSignedURL(`${id}_avatar.png`);
         }
 
         const updatedUser = await User.findByIdAndUpdate(id, updates, {
