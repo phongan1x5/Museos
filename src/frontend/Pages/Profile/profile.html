@@ -66,55 +66,66 @@
                     <img src="" alt="" class="avatar-cover" />
                     <div class="title">
                         <div class="username-title" style="width: 100%"></div>
-                        <div class="username-title" style="width: 100%"></div>
                         <a href="#" class="list-cta" onclick="openForm()">
                             <img src="../../assets/img/detail_profile.svg" />
                         </a>
                         <div class="form-popup" id="myForm">
+                            <div class="btn-area">
+                                <button
+                                    type="button"
+                                    class="cancel"
+                                    onclick="closeForm()"
+                                >
+                                    X
+                                </button>
+                            </div>
                             <form>
-                                <div>
-                                    <label for="photo"></label>
-                                    <input
-                                        type="file"
-                                        id="photo"
-                                        name="photo"
-                                        accept="image/*"
-                                        onchange="updateAvatar(this)"
-                                    />
-                                    <img
-                                        src=""
-                                        alt=""
-                                        class="change_avatar"
-                                        onclick="document.getElementById('photo').click();"
-                                        style="cursor: pointer"
-                                    />
+                                <div class="row">
+                                    <div>
+                                        <label for="photo"></label>
+                                        <input
+                                            type="file"
+                                            id="photo"
+                                            name="photo"
+                                            accept="image/*"
+                                            onchange="updateAvatar(this)"
+                                        />
+                                        <img
+                                            src=""
+                                            alt=""
+                                            class="change_avatar"
+                                            onclick="document.getElementById('photo').click();"
+                                            style="cursor: pointer"
+                                        />
+                                    </div>
+                                    <div class="info">
+                                        <label for="email"><b>Email</b></label>
+                                        <input
+                                            type="email"
+                                            name="email"
+                                            id="email"
+                                        />
+                                        <label for="name"
+                                            ><b>Username</b></label
+                                        >
+                                        <input
+                                            type="name"
+                                            name="name"
+                                            id="name"
+                                        />
+                                        <label for="birthday"
+                                            >Date of birth</label
+                                        >
+                                        <input
+                                            type="date"
+                                            id="birthday"
+                                            pattern="\d{4}-\d{2}-\d{2}"
+                                            name="birthday"
+                                        />
+                                    </div>
                                 </div>
-                                <div class="info">
-                                    <label for="email"><b>Email</b></label>
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        id="email"
-                                    />
-                                    <label for="name"><b>Username</b></label>
-                                    <input type="name" name="name" id="name" />
-                                    <label for="birthday">Date of birth</label>
-                                    <input
-                                        type="date"
-                                        id="birthday"
-                                        pattern="\d{4}-\d{2}-\d{2}"
-                                        name="birthday"
-                                    />
-                                </div>
-                                <div>
+                                <div class="submit-area">
                                     <button type="submit">Save</button>
-                                    <button
-                                        type="button"
-                                        class="btn cancel"
-                                        onclick="closeForm()"
-                                    >
-                                        Close
-                                    </button>
                                 </div>
                             </form>
                         </div>
@@ -290,11 +301,12 @@
                                 method: "PUT",
                                 body: avatar_file,
                             });
-                            if (res.status === 200)
+                            if (res.status === 200) {
                                 console.log(
                                     `Successfully uploaded to ${data.avatarUpLink}`
                                 );
-                            else console.log(`Failed to upload avatar`);
+                                location.reload();
+                            } else console.log(`Failed to upload avatar`);
                         }
                         console.log("Updated User:", data.updatedUser);
                         //location.reload();
@@ -308,7 +320,7 @@
                 }
             });
             function openForm() {
-                document.getElementById("myForm").style.display = "block";
+                document.getElementById("myForm").style.display = "flex";
             }
             function viewMore() {
                 const rightSection = document.querySelector(".lyric-wrapper");
