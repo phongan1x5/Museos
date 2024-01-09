@@ -30,7 +30,7 @@
                             <img src="./assets/img/logo.svg" alt="" />
                             <img src="./assets/img/museos.svg" alt="" />
                         </div>
-                        <ul>
+                        <ul class="action-button">
                             <li>
                                 <a href="#!">
                                     <div class="noti-wrapper">
@@ -46,7 +46,9 @@
                                 <a href="#!">home</a>
                             </li>
                             <li>
-                                <a href="../frontend/Pages/Details/details.html">library</a>
+                                <a href="../frontend/Pages/Details/details.html"
+                                    >library</a
+                                >
                             </li>
                             <li>
                                 <a href="#!">upload</a>
@@ -56,10 +58,15 @@
                             </li>
                             <li>
                                 <input
+                                    id="songSearchInput"
                                     type="text"
                                     class="search-input"
                                     placeholder="songs, genres, artists and more..."
                                 />
+                                <ul
+                                    id="autocompleteSuggestions"
+                                    class="autocomplete-suggestions"
+                                ></ul>
                             </li>
                         </ul>
 
@@ -185,7 +192,8 @@
                 const userNamePlaceholder = document.querySelector(".action");
                 if (userNamePlaceholder) {
                     userNamePlaceholder.textContent = "";
-                    userNamePlaceholder.innerHTML ='<a href="./Pages/Sign In/signin.html" class="action-link" >login</a><a href="./Pages/Sign Up/signup.html" class="action-link">sign up</a>'
+                    userNamePlaceholder.innerHTML =
+                        '<a href="./Pages/Sign In/signin.html" class="action-link" >login</a><a href="./Pages/Sign Up/signup.html" class="action-link">sign up</a>';
                 }
                 // Redirect to the login page or any other desired page
                 window.location.href = "#"; // Replace with the actual URL
@@ -212,9 +220,8 @@
                                 document.querySelector(".action");
                             console.log(userName);
                             if (userNamePlaceholder) {
-                                userNamePlaceholder.innerHTML = '';
-                                userNamePlaceholder.innerHTML +=
-                                    `<img src="${avata_src}" class="avatar-img"/><a href="./Pages/Profile/profile.html" style="text-decoration: none; color: white;" class="action-link">${userName}</a><a href="#" id="logoutlink" class="action-link" onclick="logoutUser()">log out</a>`;
+                                userNamePlaceholder.innerHTML = "";
+                                userNamePlaceholder.innerHTML += `<img src="${avata_src}" class="avatar-img"/><a href="./Pages/Profile/profile.html" style="text-decoration: none; color: white;" class="action-link">${userName}</a><a href="#" id="logoutlink" class="action-link" onclick="logoutUser()">log out</a>`;
                             }
                             // Update the page with user data, such as name, total counts, etc.
                             // You can update placeholders or elements with this data
@@ -231,6 +238,84 @@
             const userMongoId = localStorage.getItem("userMongoId");
             if (userMongoId) {
                 getUser();
+            }
+
+            document
+                .getElementById("songSearchInput")
+                .addEventListener("input", debounce(handleSearch, 500));
+
+            function handleSearch(event) {
+                const searchText = event.target.value;
+                if (!searchText) {
+                    return displaySuggestions([]);
+                }
+
+                fetch(
+                    `http://localhost:3000/api/v1/songs?titleLike=${encodeURIComponent(
+                        searchText
+                    )}&sorts=title&orders=1&limit=5`
+                )
+                    .then((response) => {
+                        if (!response.ok) {
+                            throw new Error("Network response was not ok");
+                        }
+                        return response.json();
+                    })
+                    .then((data) => displaySuggestions(data))
+                    .catch((error) => console.error("Fetching error:", error));
+            }
+
+            function displaySuggestions(songs) {
+                const suggestionsElement = document.getElementById(
+                    "autocompleteSuggestions"
+                );
+                suggestionsElement.innerHTML = "";
+
+                songs.forEach((song) => {
+                    const li = document.createElement("li");
+                    const img_element = document.createElement("img");
+                    img_element.className = "search-img";
+                    img_element.src = song.coverPath;
+                    li.appendChild(img_element);
+                    title_song = song.title.replace(/\.mp3$/, "");
+                    span_element = document.createElement("span");
+                    span_element.textContent = `${title_song} by ${song.artist.name}`;
+                    li.appendChild(span_element);
+                    li.className = "autocomplete-suggestion";
+                    li.id = song._id;
+                    li.addEventListener("click", () => {
+                        // Handle click on suggestion
+                        // E.g., fill the input with the selected song's title
+                        document.getElementById("songSearchInput").value =
+                            song.title;
+                    });
+                    suggestionsElement.appendChild(li);
+                });
+            }
+            const songLi = document.querySelectorAll(
+                ".autocomplete-suggestion"
+            );
+            songLi.forEach((title) => {
+                title.addEventListener("click", () => {
+                    // Get the song ID from the clicked song title (you may need to store the song ID in a data attribute)
+                    const songId = songLi.id;
+
+                    // Redirect the user to the song detail page with the song ID as a parameter
+                    window.location.href = `../frontend/Pages/Song/details.html?songId=${songId}`;
+                });
+            });
+
+            function debounce(func, delay) {
+                let debounceTimer;
+                return function () {
+                    const context = this,
+                        args = arguments;
+                    clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(
+                        () => func.apply(context, args),
+                        delay
+                    );
+                };
             }
         </script>
     </body>

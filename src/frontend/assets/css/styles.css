@@ -18,7 +18,7 @@ body{
     display: flex;
     margin-top: -15px;
 }
-.navbar ul{
+.navbar .action-button{
     display: flex;
     margin-left: 250px;
     gap: 56px;
@@ -260,4 +260,30 @@ footer{
 .avatar-img{
     width: 30px;
     border-radius: 15px;
+}
+.autocomplete-suggestions {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 0;
+}
+.autocomplete-suggestion {
+    padding: 5px;
+    cursor: pointer;
+    background-color: #D9D9D9;
+    font-family: iCiel Grandma;
+    font-size: 20px;
+    font-weight: 700;
+    height: 50px;
+    border-radius: 10px;
+}
+.autocomplete-suggestions li{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.autocomplete-suggestions li img{
+    height: 50px;
+    width: 50px;
+    border-radius: 10px;
+    padding: 10px;
 }
